@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+	themes: luxury --default;
+	logs: true;
+}
+
+@font-face {
+	font-family: "Crimson Pro";
+	src: url("./lib/fonts/CrimsonPro-VariableFont_wght.ttf") format("truetype");
+	font-weight: 200 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Crimson Pro";
+	src: url("./lib/fonts/CrimsonPro-Italic-VariableFont_wght.ttf") format("truetype");
+	font-weight: 200 900;
+	font-style: italic;
+	font-display: swap;
+}
+
+@theme {
+	--font-serif: "Crimson Pro", serif;
+	--font-sans: "Inter", system-ui, sans-serif;
+}
