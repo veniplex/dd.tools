@@ -6,9 +6,7 @@ export interface ToolMetadata {
 	title: string;
 	description: string;
 	icon: Component;
-	href: string;
 	status: ToolStatus;
 	slug: string;
-	order: number;
 	version?: string;
 }

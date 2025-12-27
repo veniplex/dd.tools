@@ -5,11 +5,11 @@
 		title,
 		description,
 		icon: Icon,
-		href,
+		slug,
 		status,
 		version
 	}: Partial<ToolMetadata> &
-		Pick<ToolMetadata, "title" | "description" | "icon" | "href" | "status" | "version"> = $props();
+		Pick<ToolMetadata, "title" | "description" | "icon" | "slug" | "status" | "version"> = $props();
 
 	const statusConfig = $derived({
 		released: { style: "badge badge-ghost", text: version ? `v${version}` : "" },
@@ -20,7 +20,7 @@
 
 <svelte:element
 	this={status === "planned" ? "div" : "a"}
-	{href}
+	href={`/tools/${slug}`}
 	class="group card transform overflow-hidden border border-primary/25 {status !== 'planned'
 		? 'hover:scale-105 hover:border-primary'
 		: 'cursor-default opacity-80'} bg-base-100 shadow-xl transition-transform duration-300"
@@ -32,7 +32,7 @@
 		<h2 class="card-title font-serif text-2xl tracking-wide">{title}</h2>
 		<p class="text-sm opacity-70">{description}</p>
 		<div class="mt-4 card-actions h-6 w-full justify-center">
-			<div class={statusConfig[status].style}>
+			<div class={`${statusConfig[status].style} font-medium`}>
 				{statusConfig[status].text}
 			</div>
 		</div>
