@@ -13,24 +13,28 @@
 
 	const statusConfig = $derived({
 		released: { style: "badge badge-ghost", text: version ? `v${version}` : "" },
-		beta: { style: "badge badge-info badge-soft", text: "BETA" },
-		planned: { style: "badge badge-accent badge-dash", text: "PLANNED" }
+		beta: { style: "badge badge-info", text: "BETA" },
+		planned: { style: "badge badge-accent badge-soft", text: "PLANNED" }
 	});
 </script>
 
 <svelte:element
 	this={status === "planned" ? "div" : "a"}
-	href={`/tools/${slug}`}
-	class="group card transform overflow-hidden border border-primary/25 {status !== 'planned'
+	href={`/${slug}`}
+	class="card transform overflow-hidden border border-primary/25 {status !== 'planned'
 		? 'hover:scale-105 hover:border-primary'
 		: 'cursor-default opacity-80'} bg-base-100 shadow-xl transition-transform duration-300"
 >
 	<div class="card-body items-center text-center">
-		<div class="mb-2 text-5xl text-primary transition-transform duration-300">
+		<div
+			class="mb-2 text-5xl {status !== 'planned'
+				? 'text-primary'
+				: 'text-primary/50'} transition-transform duration-300"
+		>
 			<Icon />
 		</div>
 		<h2 class="card-title font-serif text-2xl tracking-wide">{title}</h2>
-		<p class="text-sm opacity-70">{description}</p>
+		<p class="text-sm text-primary {status !== 'planned' ? '' : 'opacity-70'}">{description}</p>
 		<div class="mt-4 card-actions h-6 w-full justify-center">
 			<div class={`${statusConfig[status].style} font-medium`}>
 				{statusConfig[status].text}

@@ -1,26 +1,24 @@
 import type { ToolMetadata } from './types';
 
 // Icons from unplugin-icons
-import IconCastle from '~icons/mdi/castle';
 import IconSword from '~icons/mdi/sword-cross';
 import IconDice from '~icons/mdi/dice-d20';
 import IconMonster from '~icons/game-icons/spiked-dragon-head';
-import IconBook from '~icons/mdi/book-open-variant';
 import IconScroll from '~icons/mdi/scroll-text';
 
 export const tools: ToolMetadata[] = [
 	{
-		title: 'Combat Tracker',
-		description: 'Streamline your battles. Track initiative, HP, and conditions without breaking the flow.',
+		title: 'Encounter Tracker',
+		description: 'Plan and track your encounters with ease. Manage your party and enemies in one place.',
 		icon: IconSword,
 		status: 'beta',
-		slug: 'combat-tracker'
+		slug: 'encounter-tracker'
 	},
 	{
 		title: 'Monster Library',
 		description: 'Quick reference for thousands of monsters. Filter by type, size, and alignment.',
 		icon: IconMonster,
-		status: 'beta',
+		status: 'planned',
 		slug: 'monster-library'
 	},
 	{
