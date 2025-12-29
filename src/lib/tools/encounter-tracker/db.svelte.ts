@@ -179,7 +179,7 @@ class EncounterStore {
 	async addGroup(name: string) {
 		if (!browser) return;
 		const newGroup: Group = {
-			id: crypto.randomUUID().split("-")[0],
+			id: crypto.randomUUID().split('-')[0],
 			name
 		};
 		try {
@@ -191,12 +191,48 @@ class EncounterStore {
 		}
 	}
 
+	async updateGroup(group: Group) {
+		if (!browser) return;
+
+		const oldGroup = await db.groups.get(group.id);
+		if (!oldGroup) return;
+
+		try {
+			await db.transaction('rw', [db.groups, db.encounters], async () => {
+				await db.groups.put($state.snapshot(group));
+
+				if (oldGroup.name !== group.name) {
+					// Update all encounters that used the old name
+					const affectedEncounters = await db.encounters.where('group').equals(oldGroup.name).toArray();
+					for (const enc of affectedEncounters) {
+						enc.group = group.name;
+						await db.encounters.put(enc);
+					}
+				}
+			});
+		} catch (err) {
+			console.error('Failed to update group:', err);
+			throw err;
+		}
+	}
+
 	async deleteGroup(id: string) {
 		if (!browser) return;
+		
+		const group = await db.groups.get(id);
+		if (!group) return;
+
 		try {
-			await db.groups.delete(id);
-			// Optional: Update encounters that were in this group?
-			// For now, they will just appear as "Not assigned"
+			await db.transaction('rw', [db.groups, db.encounters], async () => {
+				await db.groups.delete(id);
+				
+				// Set group to undefined for all encounters in this group
+				const affectedEncounters = await db.encounters.where('group').equals(group.name).toArray();
+				for (const enc of affectedEncounters) {
+					delete enc.group;
+					await db.encounters.put(enc);
+				}
+			});
 		} catch (err) {
 			console.error('Failed to delete group:', err);
 			throw err;
