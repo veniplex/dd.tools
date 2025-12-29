@@ -20,6 +20,8 @@
 	let groupToEdit = $state<Group | null>(null);
 	let groupToDelete = $state<Group | null>(null);
 
+	let dragOverGroup = $state<string | null>(null);
+
 	async function handleEditGroup(name: string) {
 		if (groupToEdit) {
 			await encounterStore.updateGroup({ ...groupToEdit, name });
@@ -33,24 +35,65 @@
 			groupToDelete = null;
 		}
 	}
+
+	function handleDragOver(e: DragEvent, groupId: string | null) {
+		e.preventDefault();
+		if (e.dataTransfer) {
+			e.dataTransfer.dropEffect = "move";
+		}
+		dragOverGroup = groupId === null ? "unassigned" : groupId;
+	}
+
+	function handleDragLeave() {
+		dragOverGroup = null;
+	}
+
+	async function handleDrop(e: DragEvent, groupName?: string) {
+		e.preventDefault();
+		dragOverGroup = null;
+
+		const encounterId = e.dataTransfer?.getData("text/plain");
+		if (!encounterId) return;
+
+		const encounter = encounterStore.encounters.find((enc) => enc.id === encounterId);
+		if (encounter) {
+			await encounterStore.updateEncounter({
+				...encounter,
+				group: groupName
+			});
+		}
+	}
 </script>
 
 <div class="flex flex-col gap-8">
 	<!-- Ungrouped Encounters -->
-	{#if ungrouped.length > 0}
-		<div class="flex flex-col gap-3">
-			<h3 class="px-2 text-xs font-semibold tracking-wider text-base-content/50 uppercase">
-				Not Assigned
-			</h3>
-			<div
-				class="grid grid-cols-1 gap-4 rounded-xl border-2 border-base-content/10 p-2 md:grid-cols-2 lg:grid-cols-3"
-			>
-				{#each ungrouped as encounter (encounter.id)}
-					<EncounterCard {encounter} />
-				{/each}
-			</div>
+	<div class="flex flex-col gap-3">
+		<h3 class="px-2 text-xs font-semibold tracking-wider text-base-content/50 uppercase">
+			Not Assigned
+		</h3>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div
+			class="grid grid-cols-1 gap-4 rounded-xl border-2 p-2 md:grid-cols-2 lg:grid-cols-3 {dragOverGroup ===
+			'unassigned'
+				? 'border-primary bg-primary/5'
+				: 'border-base-content/10'}"
+			ondragover={(e) => handleDragOver(e, null)}
+			ondragleave={handleDragLeave}
+			ondrop={(e) => handleDrop(e)}
+		>
+			{#each ungrouped as encounter (encounter.id)}
+				<EncounterCard {encounter} />
+			{/each}
+
+			{#if ungrouped.length === 0}
+				<div
+					class="col-span-full flex h-[86px] items-center justify-center text-sm text-base-content/30"
+				>
+					No unassigned encounters
+				</div>
+			{/if}
 		</div>
-	{/if}
+	</div>
 
 	<!-- Grouped Encounters -->
 	{#each groupData as { group, encounters } (group.id)}
@@ -77,21 +120,28 @@
 				</div>
 			</div>
 
-			{#if encounters.length > 0}
-				<div
-					class="grid grid-cols-1 gap-4 rounded-xl border-2 border-base-content/10 p-2 md:grid-cols-2 lg:grid-cols-3"
-				>
-					{#each encounters as encounter (encounter.id)}
-						<EncounterCard {encounter} />
-					{/each}
-				</div>
-			{:else}
-				<div
-					class="flex h-[86px] items-center justify-center rounded-xl border-2 border-dashed border-base-content/10 text-sm text-base-content/30"
-				>
-					No assigned encounters
-				</div>
-			{/if}
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				class="grid grid-cols-1 gap-4 rounded-xl border-2 p-2 md:grid-cols-2 lg:grid-cols-3 {dragOverGroup ===
+				group.id
+					? 'border-primary bg-primary/5'
+					: 'border-base-content/10'}"
+				ondragover={(e) => handleDragOver(e, group.id)}
+				ondragleave={handleDragLeave}
+				ondrop={(e) => handleDrop(e, group.name)}
+			>
+				{#each encounters as encounter (encounter.id)}
+					<EncounterCard {encounter} />
+				{/each}
+
+				{#if encounters.length === 0}
+					<div
+						class="col-span-full flex h-[86px] items-center justify-center rounded-xl border-2 border-dashed border-base-content/10 text-sm text-base-content/30"
+					>
+						No assigned encounters
+					</div>
+				{/if}
+			</div>
 		</div>
 	{/each}
 </div>

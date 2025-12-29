@@ -30,9 +30,28 @@
 		await encounterStore.deleteEncounter(encounter.id);
 		showDeleteModal = false;
 	}
+
+	function handleDragStart(e: DragEvent) {
+		if (e.dataTransfer) {
+			e.dataTransfer.setData("text/plain", encounter.id);
+			e.dataTransfer.effectAllowed = "move";
+		}
+		// Add a class for visual feedback
+		(e.target as HTMLElement).classList.add("opacity-50");
+	}
+
+	function handleDragEnd(e: DragEvent) {
+		(e.target as HTMLElement).classList.remove("opacity-50");
+	}
 </script>
 
-<div class="group relative">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	class="group relative"
+	draggable="true"
+	ondragstart={handleDragStart}
+	ondragend={handleDragEnd}
+>
 	<a
 		href="/encounter-tracker/{encounter.id}"
 		class="card flex flex-col border border-base-300 bg-base-200 p-4 transition-all hover:border-primary hover:bg-base-300 hover:shadow-md"
