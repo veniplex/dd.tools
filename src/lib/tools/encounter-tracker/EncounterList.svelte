@@ -25,14 +25,18 @@
 
 <div class="flex flex-col gap-8">
 	<!-- Ungrouped Encounters -->
-	<div class="flex flex-col gap-4">
-		<h3 class="px-2 text-sm font-semibold tracking-wider text-gray-500 uppercase">Not assigned</h3>
-		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-			{#each ungrouped as encounter (encounter.id)}
-				<EncounterCard {encounter} />
-			{/each}
+	{#if ungrouped.length > 0}
+		<div class="flex flex-col gap-4">
+			<!-- <h3 class="px-2 text-sm font-semibold tracking-wider text-gray-500 uppercase">
+				Unassigned Encounters
+			</h3> -->
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+				{#each ungrouped as encounter (encounter.id)}
+					<EncounterCard {encounter} />
+				{/each}
+			</div>
 		</div>
-	</div>
+	{/if}
 
 	<!-- Grouped Encounters -->
 	{#each Object.entries(groups) as [groupName, groupEncounters] (groupName)}

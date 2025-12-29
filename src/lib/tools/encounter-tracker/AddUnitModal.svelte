@@ -1,0 +1,145 @@
+<script lang="ts">
+	import type { UnitAffiliation, Unit } from "./types";
+	import IconDice from "~icons/game-icons/dice-twenty-faces-twenty";
+	import { onMount } from "svelte";
+
+	interface Props {
+		onAdd: (unit: Omit<Unit, "id">) => void;
+		onClose: () => void;
+	}
+
+	let { onAdd, onClose }: Props = $props();
+
+	let name = $state("");
+	let hp = $state(10);
+	let ac = $state(10);
+	let initiativeBonus = $state(0);
+	let initiative = $state(0);
+	let affiliation = $state<UnitAffiliation>("enemy");
+	let dialog = $state<HTMLDialogElement>();
+
+	onMount(() => {
+		dialog?.showModal();
+	});
+
+	function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		onAdd({
+			name,
+			hp,
+			maxHp: hp,
+			ac,
+			initiativeBonus,
+			initiative,
+			affiliation
+		});
+		onClose();
+	}
+
+	function rollInitiative() {
+		initiative = Math.floor(Math.random() * 20) + 1 + initiativeBonus;
+	}
+
+	function handleClose() {
+		onClose();
+	}
+</script>
+
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<dialog
+	bind:this={dialog}
+	class="modal"
+	onclose={handleClose}
+	onclick={(e) => e.target === dialog && handleClose()}
+>
+	<div class="modal-box max-w-md">
+		<h3 class="font-serif text-2xl font-bold">Add New Unit</h3>
+
+		<form onsubmit={handleSubmit} class="mt-4 flex flex-col gap-4">
+			<div class="form-control">
+				<label class="label" for="unit-name">
+					<span class="label-text">Name</span>
+				</label>
+				<input
+					id="unit-name"
+					type="text"
+					bind:value={name}
+					placeholder="Goblin, Aragorn, etc."
+					class="input-bordered input"
+					required
+				/>
+			</div>
+
+			<div class="grid grid-cols-2 gap-4">
+				<div class="form-control">
+					<label class="label" for="unit-hp">
+						<span class="label-text">HP</span>
+					</label>
+					<input id="unit-hp" type="number" bind:value={hp} class="input-bordered input" required />
+				</div>
+				<div class="form-control">
+					<label class="label" for="unit-ac">
+						<span class="label-text">AC</span>
+					</label>
+					<input id="unit-ac" type="number" bind:value={ac} class="input-bordered input" required />
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 gap-4">
+				<div class="form-control">
+					<label class="label" for="unit-init-bonus">
+						<span class="label-text">Initiative Bonus</span>
+					</label>
+					<input
+						id="unit-init-bonus"
+						type="number"
+						bind:value={initiativeBonus}
+						class="input-bordered input"
+					/>
+				</div>
+				<div class="form-control">
+					<label class="label" for="unit-init">
+						<span class="label-text">Initiative Roll</span>
+					</label>
+					<div class="join w-full">
+						<input
+							id="unit-init"
+							type="number"
+							bind:value={initiative}
+							class="input-bordered input join-item w-full"
+						/>
+						<button
+							type="button"
+							class="btn join-item btn-square"
+							onclick={rollInitiative}
+							title="Roll d20"
+						>
+							<IconDice />
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-control">
+				<label class="label" for="unit-affiliation">
+					<span class="label-text">Affiliation</span>
+				</label>
+				<select id="unit-affiliation" class="select-bordered select" bind:value={affiliation}>
+					<option value="player">Player</option>
+					<option value="ally">Ally</option>
+					<option value="neutral">Neutral</option>
+					<option value="enemy">Enemy</option>
+				</select>
+			</div>
+
+			<div class="modal-action">
+				<button type="button" class="btn btn-ghost" onclick={handleClose}>Cancel</button>
+				<button type="submit" class="btn btn-primary">Add Unit</button>
+			</div>
+		</form>
+	</div>
+	<form method="dialog" class="modal-backdrop">
+		<button>close</button>
+	</form>
+</dialog>

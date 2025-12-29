@@ -1,50 +1,48 @@
 <script lang="ts">
 	import EncounterList from "$lib/tools/encounter-tracker/EncounterList.svelte";
-	import type { Encounter } from "$lib/tools/encounter-tracker/types";
+	import { encounterStore } from "$lib/tools/encounter-tracker/db.svelte";
+	import AddEncounterModal from "$lib/tools/encounter-tracker/AddEncounterModal.svelte";
+	import AddGroupModal from "$lib/tools/encounter-tracker/AddGroupModal.svelte";
+	import IconPlus from "~icons/heroicons/plus";
+	import IconFolderPlus from "~icons/heroicons/folder-plus";
 
-	const encounters: Encounter[] = [
-		{
-			id: "1",
-			name: "Encounter 1",
-			description: "Description 1",
-			status: "active",
-			group: "Group 1"
-		},
-		{
-			id: "2",
-			name: "This is a very long name for an encounter",
-			description: "Description 2",
-			status: "active",
-			group: "Group 2"
-		},
-		{
-			id: "3",
-			name: "Encounter 3",
-			status: "paused"
-		},
-		{
-			id: "4",
-			name: "Encounter 4",
-			description: "Description 4",
-			group: "Group 3",
-			status: "paused"
-		},
-		{
-			id: "5",
-			name: "Encounter 5",
-			group: "Group 1",
-			status: "stopped"
-		},
-		{
-			id: "6",
-			name: "Encounter 6",
-			status: "stopped"
-		}
-	];
+	let showEncounterModal = $state(false);
+	let showGroupModal = $state(false);
+
+	async function handleAddEncounter(name: string, group?: string) {
+		await encounterStore.addEncounter(name, group);
+	}
+
+	async function handleAddGroup(name: string) {
+		await encounterStore.addGroup(name);
+	}
 </script>
 
-<h1 class="text-center font-serif text-2xl font-bold md:text-4xl">Encounter Tracker</h1>
+<div class="container mx-auto p-4">
+	<h1 class="mb-8 text-center font-serif text-4xl font-bold md:text-5xl">Encounter Tracker</h1>
 
-<button class="btn btn-primary">New Encounter</button>
+	<div class="mb-12 flex flex-wrap justify-center gap-4">
+		<button class="btn btn-primary" onclick={() => (showEncounterModal = true)}>
+			<IconPlus class="mr-2 h-5 w-5" /> New Encounter
+		</button>
+		<button class="btn btn-secondary" onclick={() => (showGroupModal = true)}>
+			<IconFolderPlus class="mr-2 h-5 w-5" /> New Group
+		</button>
+	</div>
 
-<EncounterList {encounters} />
+	{#if encounterStore.loading}
+		<div class="flex h-64 items-center justify-center">
+			<span class="loading loading-lg loading-spinner text-primary"></span>
+		</div>
+	{:else}
+		<EncounterList encounters={encounterStore.encounters} />
+	{/if}
+</div>
+
+{#if showEncounterModal}
+	<AddEncounterModal onAdd={handleAddEncounter} onClose={() => (showEncounterModal = false)} />
+{/if}
+
+{#if showGroupModal}
+	<AddGroupModal onAdd={handleAddGroup} onClose={() => (showGroupModal = false)} />
+{/if}
