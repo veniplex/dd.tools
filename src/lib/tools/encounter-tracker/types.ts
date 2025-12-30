@@ -6,6 +6,7 @@ export interface Unit {
 	name: string;
 	hp: number;
 	maxHp: number;
+	tempHp: number;
 	ac: number;
 	initiativeBonus: number;
 	initiative: number;

@@ -3,7 +3,7 @@
 	import { encounterStore } from "$lib/tools/encounter-tracker/db.svelte";
 	import type { Encounter, Unit } from "$lib/tools/encounter-tracker/types";
 	import UnitRow from "$lib/tools/encounter-tracker/UnitRow.svelte";
-	import AddUnitModal from "$lib/tools/encounter-tracker/AddUnitModal.svelte";
+	import UnitModal from "$lib/tools/encounter-tracker/UnitModal.svelte";
 	import EditEncounterModal from "$lib/tools/encounter-tracker/EditEncounterModal.svelte";
 	import ConfirmationModal from "$lib/tools/encounter-tracker/ConfirmationModal.svelte";
 	import IconPlus from "~icons/heroicons/plus";
@@ -21,6 +21,7 @@
 	let showDuplicateModal = $state(false);
 	let showDeleteEncounterModal = $state(false);
 	let unitToDelete = $state<string | null>(null);
+	let unitToEdit = $state<Unit | null>(null);
 
 	let sortedUnits = $derived(
 		encounter?.units?.slice().sort((a, b) => b.initiative - a.initiative) || []
@@ -44,6 +45,27 @@
 			const units = encounter.units.filter((u) => u.id !== unitToDelete);
 			await encounterStore.updateEncounter({ ...encounter, units });
 			unitToDelete = null;
+		}
+	}
+
+	function handleEditUnit(unit: Unit) {
+		unitToEdit = unit;
+	}
+
+	async function handleEditUnitConfirm(unitData: Omit<Unit, "id">) {
+		if (encounter && unitToEdit) {
+			const updatedUnit = { ...unitData, id: unitToEdit.id };
+			const units = encounter.units.map((u) => (u.id === unitToEdit?.id ? updatedUnit : u));
+			await encounterStore.updateEncounter({ ...encounter, units });
+			unitToEdit = null;
+		}
+	}
+
+	async function handleDuplicateUnit(unit: Unit) {
+		if (encounter) {
+			const { id: _, ...unitData } = unit;
+			// Duplicate slightly modified name or just same? Usually safe to append (Copy) or just add another.
+			await encounterStore.addUnit(encounter.id, { ...unitData, name: `${unitData.name} (Copy)` });
 		}
 	}
 
@@ -105,7 +127,7 @@
 			</div>
 		</div>
 
-		<!-- TODO: round management -->
+		<!-- TODO: Add round management here -->
 
 		<div class="flex flex-col gap-3">
 			{#if sortedUnits.length === 0}
@@ -116,13 +138,38 @@
 					</button>
 				</div>
 			{:else}
+				<!-- Table Header -->
+				<div
+					class="grid grid-cols-[0.5fr_3fr_0.5fr_5fr_0.25fr] gap-4 px-4 text-xs font-bold tracking-wider text-base-content/40 uppercase"
+				>
+					<div class="text-center">Init</div>
+					<div class="text-start">Unit</div>
+					<div class="text-center">AC</div>
+					<div class="text-center">HP & Status</div>
+				</div>
+
 				{#each sortedUnits as unit (unit.id)}
-					<UnitRow {unit} onUpdate={handleUpdateUnit} onDelete={() => (unitToDelete = unit.id)} />
+					<UnitRow
+						{unit}
+						onUpdate={handleUpdateUnit}
+						onDelete={() => (unitToDelete = unit.id)}
+						onEdit={handleEditUnit}
+						onDuplicate={handleDuplicateUnit}
+					/>
 				{/each}
 			{/if}
 
 			{#if showAddModal}
-				<AddUnitModal onAdd={handleAddUnit} onClose={() => (showAddModal = false)} />
+				<UnitModal mode="add" onConfirm={handleAddUnit} onClose={() => (showAddModal = false)} />
+			{/if}
+
+			{#if unitToEdit}
+				<UnitModal
+					mode="edit"
+					unit={unitToEdit}
+					onConfirm={handleEditUnitConfirm}
+					onClose={() => (unitToEdit = null)}
+				/>
 			{/if}
 
 			{#if showEditModal}

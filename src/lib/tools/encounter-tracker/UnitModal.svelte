@@ -4,19 +4,23 @@
 	import { onMount } from "svelte";
 
 	interface Props {
-		onAdd: (unit: Omit<Unit, "id">) => void;
+		mode: "add" | "edit";
+		unit?: Unit;
+		onConfirm: (unitData: Omit<Unit, "id">) => void;
 		onClose: () => void;
 	}
 
-	let { onAdd, onClose }: Props = $props();
+	let { mode, unit, onConfirm, onClose }: Props = $props();
 
-	let name = $state("");
-	let hp = $state(10);
-	let ac = $state(10);
-	let initiativeBonus = $state(0);
-	let initiative = $state(0);
-	let affiliation = $state<UnitAffiliation>("enemy");
-	let dialog = $state<HTMLDialogElement>();
+	let name = $state(unit?.name ?? "");
+	let hp = $state(unit?.hp ?? 10);
+	let maxHp = $state(unit?.maxHp ?? 10);
+	let ac = $state(unit?.ac ?? 10);
+	let initiativeBonus = $state(unit?.initiativeBonus ?? 0);
+	let initiative = $state(unit?.initiative ?? 0);
+	let affiliation = $state<UnitAffiliation>(unit?.affiliation ?? "enemy");
+	let tempHp = $state(unit?.tempHp ?? 0);
+	let dialog = $state<HTMLDialogElement | undefined>(undefined);
 
 	onMount(() => {
 		dialog?.showModal();
@@ -24,14 +28,15 @@
 
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
-		onAdd({
+		onConfirm({
 			name,
 			hp,
-			maxHp: hp,
+			maxHp: mode === "add" ? hp : maxHp,
 			ac,
 			initiativeBonus,
 			initiative,
-			affiliation
+			affiliation,
+			tempHp
 		});
 		onClose();
 	}
@@ -53,8 +58,8 @@
 	onclose={handleClose}
 	onclick={(e) => e.target === dialog && handleClose()}
 >
-	<div class="modal-box max-w-md">
-		<h3 class="font-serif text-2xl font-bold">Add New Unit</h3>
+	<div class="modal-box max-w-md border border-base-300 shadow-2xl">
+		<h3 class="font-serif text-2xl font-bold">{mode === "add" ? "Add New Unit" : "Edit Unit"}</h3>
 
 		<form onsubmit={handleSubmit} class="mt-4 flex flex-col gap-4">
 			<div class="form-control">
@@ -74,16 +79,45 @@
 			<div class="grid grid-cols-2 gap-4">
 				<div class="form-control">
 					<label class="label" for="unit-hp">
-						<span class="label-text">HP</span>
+						<span class="label-text">{mode === "add" ? "HP" : "Current HP"}</span>
 					</label>
 					<input id="unit-hp" type="number" bind:value={hp} class="input-bordered input" required />
 				</div>
+				{#if mode === "edit"}
+					<div class="form-control">
+						<label class="label" for="unit-max-hp">
+							<span class="label-text">Max HP</span>
+						</label>
+						<input
+							id="unit-max-hp"
+							type="number"
+							bind:value={maxHp}
+							class="input-bordered input"
+							required
+						/>
+					</div>
+				{/if}
 				<div class="form-control">
 					<label class="label" for="unit-ac">
 						<span class="label-text">AC</span>
 					</label>
 					<input id="unit-ac" type="number" bind:value={ac} class="input-bordered input" required />
 				</div>
+				{#if mode === "edit"}
+					<div class="form-control">
+						<label class="label" for="unit-temp-hp">
+							<span class="label-text">Temp HP</span>
+						</label>
+						<input
+							id="unit-temp-hp"
+							type="number"
+							bind:value={tempHp}
+							class="input-bordered input"
+						/>
+					</div>
+				{:else}
+					<div></div>
+				{/if}
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">
@@ -135,7 +169,9 @@
 
 			<div class="modal-action">
 				<button type="button" class="btn btn-ghost" onclick={handleClose}>Cancel</button>
-				<button type="submit" class="btn btn-primary">Add Unit</button>
+				<button type="submit" class="btn btn-primary">
+					{mode === "add" ? "Add Unit" : "Save Changes"}
+				</button>
 			</div>
 		</form>
 	</div>

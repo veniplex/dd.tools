@@ -148,7 +148,7 @@ class EncounterStore {
 			group: newGroup === undefined ? original.group : newGroup,
 			status: 'paused',
 			round: 1,
-			units: original.units.map((u) => ({ ...u, id: crypto.randomUUID().split("-")[0] }))
+			units: original.units.map((u) => ({ ...u, id: crypto.randomUUID().split("-")[0], tempHp: u.tempHp ?? 0 }))
 		};
 
 		try {
@@ -168,7 +168,8 @@ class EncounterStore {
 
 		const newUnit: Unit = {
 			...unit,
-			id: crypto.randomUUID().split("-")[0]
+			id: crypto.randomUUID().split("-")[0],
+			tempHp: 0
 		};
 
 		encounter.units.push(newUnit);
