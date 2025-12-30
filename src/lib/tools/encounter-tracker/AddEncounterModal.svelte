@@ -3,12 +3,13 @@
 	import { onMount } from "svelte";
 
 	interface Props {
-		onAdd: (name: string, group?: string) => void;
+		onAdd: (name: string, description?: string, group?: string) => void;
 		onClose: () => void;
 	}
 
 	let { onAdd, onClose }: Props = $props();
 	let name = $state("");
+	let description = $state("");
 	let groupId = $state("");
 	let dialog = $state<HTMLDialogElement>();
 
@@ -20,7 +21,7 @@
 		e.preventDefault();
 		if (name.trim()) {
 			const group = encounterStore.groups.find((g) => g.id === groupId);
-			onAdd(name.trim(), group?.name);
+			onAdd(name.trim(), description.trim() || undefined, group?.name);
 			onClose();
 		}
 	}
@@ -65,6 +66,18 @@
 						<option value={group.id}>{group.name}</option>
 					{/each}
 				</select>
+			</div>
+
+			<div class="form-control">
+				<label class="label" for="enc-desc">
+					<span class="label-text">Description</span>
+				</label>
+				<textarea
+					id="enc-desc"
+					bind:value={description}
+					placeholder="Short summary of the scene..."
+					class="textarea-bordered textarea h-24"
+				></textarea>
 			</div>
 
 			<div class="modal-action">

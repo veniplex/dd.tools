@@ -18,12 +18,15 @@
 		stopped: "badge-error"
 	};
 
-	async function handleEditConfirm(name: string, group?: string) {
-		await encounterStore.updateEncounter({ ...encounter, name, group });
+	async function handleEditConfirm(name: string, description?: string, group?: string) {
+		await encounterStore.updateEncounter({ ...encounter, name, description, group });
 	}
 
-	async function handleDuplicateConfirm(name: string, group?: string) {
-		await encounterStore.duplicateEncounter(encounter.id, name, group);
+	async function handleDuplicateConfirm(name: string, description?: string, group?: string) {
+		const dup = await encounterStore.duplicateEncounter(encounter.id, name, group);
+		if (dup && description !== encounter.description) {
+			await encounterStore.updateEncounter({ ...dup, description });
+		}
 	}
 
 	async function handleDelete() {
@@ -108,6 +111,7 @@
 		<EditEncounterModal
 			mode="edit"
 			initialName={encounter.name}
+			initialDescription={encounter.description}
 			initialGroup={encounter.group}
 			onConfirm={handleEditConfirm}
 			onClose={() => (showEditModal = false)}
@@ -118,6 +122,7 @@
 		<EditEncounterModal
 			mode="duplicate"
 			initialName={encounter.name}
+			initialDescription={encounter.description}
 			initialGroup={encounter.group}
 			onConfirm={handleDuplicateConfirm}
 			onClose={() => (showDuplicateModal = false)}

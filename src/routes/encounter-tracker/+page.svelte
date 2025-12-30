@@ -9,8 +9,8 @@
 	let showEncounterModal = $state(false);
 	let showGroupModal = $state(false);
 
-	async function handleAddEncounter(name: string, group?: string) {
-		await encounterStore.addEncounter(name, group);
+	async function handleAddEncounter(name: string, description?: string, group?: string) {
+		await encounterStore.addEncounter(name, description, group);
 	}
 
 	async function handleAddGroup(name: string) {

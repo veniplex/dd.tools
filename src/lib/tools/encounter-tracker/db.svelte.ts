@@ -87,16 +87,17 @@ class EncounterStore {
 		});
 	}
 
-	async addEncounter(name: string, group?: string) {
+	async addEncounter(name: string, description?: string, group?: string) {
 		if (!browser) return;
 		
 		const newEncounter: Encounter = {
 			id: crypto.randomUUID().split("-")[0],
 			name,
+			description,
 			status: 'paused',
 			group,
 			units: [],
-			round: 1
+			round: 0
 		};
 		
 		try {

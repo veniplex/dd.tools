@@ -5,15 +5,25 @@
 	interface Props {
 		encounterId?: string;
 		initialName: string;
+		initialDescription?: string;
 		initialGroup?: string;
 		mode: "edit" | "duplicate";
-		onConfirm: (name: string, group?: string) => void;
+		onConfirm: (name: string, description?: string, group?: string) => void;
 		onClose: () => void;
 	}
 
-	let { encounterId, initialName, initialGroup, mode, onConfirm, onClose }: Props = $props();
+	let {
+		encounterId,
+		initialName,
+		initialDescription,
+		initialGroup,
+		mode,
+		onConfirm,
+		onClose
+	}: Props = $props();
 
 	let name = $state(mode === "duplicate" ? `${initialName} (Copy)` : initialName);
+	let description = $state(initialDescription || "");
 	let groupName = $state(initialGroup || "");
 	let dialog = $state<HTMLDialogElement>();
 
@@ -24,7 +34,7 @@
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		if (name.trim()) {
-			onConfirm(name.trim(), groupName || undefined);
+			onConfirm(name.trim(), description.trim() || undefined, groupName || undefined);
 			onClose();
 		}
 	}
@@ -64,6 +74,18 @@
 						<option value={group.name}>{group.name}</option>
 					{/each}
 				</select>
+			</div>
+
+			<div class="form-control">
+				<label class="label" for="edit-desc">
+					<span class="label-text">Description</span>
+				</label>
+				<textarea
+					id="edit-desc"
+					bind:value={description}
+					placeholder="Short summary of the scene..."
+					class="textarea-bordered textarea h-24"
+				></textarea>
 			</div>
 
 			<div class="modal-action">

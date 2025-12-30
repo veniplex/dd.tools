@@ -47,16 +47,20 @@
 		}
 	}
 
-	async function handleEditConfirm(name: string, group?: string) {
+	async function handleEditConfirm(name: string, description?: string, group?: string) {
 		if (encounter) {
-			await encounterStore.updateEncounter({ ...encounter, name, group });
+			await encounterStore.updateEncounter({ ...encounter, name, description, group });
 		}
 	}
 
-	async function handleDuplicateConfirm(name: string, group?: string) {
+	async function handleDuplicateConfirm(name: string, description?: string, group?: string) {
 		if (encounter) {
 			const dup = await encounterStore.duplicateEncounter(encounter.id, name, group);
 			if (dup) {
+				// Update description if it changed (duplicateEncounter doesn't accept desc as param yet but we can update it after)
+				if (description !== encounter.description) {
+					await encounterStore.updateEncounter({ ...dup, description });
+				}
 				goto(`/encounter-tracker/${dup.id}`);
 			}
 		}
@@ -70,56 +74,45 @@
 	}
 </script>
 
-<div class="container mx-auto max-w-4xl p-4">
+<div class="container mx-auto p-4">
 	{#if encounter}
-		<div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+		<div class="mb-4 flex flex-wrap items-center justify-between gap-4">
 			<div class="flex items-center gap-4">
-				<a href="/encounter-tracker" class="btn btn-circle btn-ghost">
-					<IconArrowLeft class="h-6 w-6" />
+				<a href="/encounter-tracker" class="btn btn-ghost">
+					<IconArrowLeft class="size-6" />
 				</a>
 				<div>
 					<h1 class="font-serif text-3xl font-bold">{encounter.name}</h1>
 					<p class="text-base-content/60">
-						Round {encounter.round} • {encounter.units.length} Units
-						{encounter.group ? ` • ${encounter.group}` : ""}
+						{encounter.group ? `${encounter.group} •` : ""}
+						{encounter.units.length} Units
 					</p>
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-2">
-				<div class="dropdown dropdown-end">
-					<button class="btn btn-circle btn-ghost">
-						<IconEdit class="h-5 w-5" />
-					</button>
-					<ul class="dropdown-content menu z-1 w-52 rounded-box bg-base-200 p-2 shadow">
-						<li>
-							<button onclick={() => (showEditModal = true)}>
-								<IconEdit class="h-4 w-4" /> Edit / Move
-							</button>
-						</li>
-						<li>
-							<button onclick={() => (showDuplicateModal = true)}>
-								<IconDuplicate class="h-4 w-4" /> Duplicate
-							</button>
-						</li>
-						<li>
-							<button class="text-error" onclick={() => (showDeleteEncounterModal = true)}>
-								<IconTrash class="h-4 w-4" /> Delete
-							</button>
-						</li>
-					</ul>
-				</div>
+				<button onclick={() => (showEditModal = true)} class="btn btn-ghost">
+					<IconEdit class="size-5" />
+				</button>
+				<button onclick={() => (showDuplicateModal = true)} class="btn btn-ghost">
+					<IconDuplicate class="size-5" />
+				</button>
+				<button onclick={() => (showDeleteEncounterModal = true)} class="btn text-error btn-ghost">
+					<IconTrash class="size-5" />
+				</button>
 				<button class="btn btn-primary" onclick={() => (showAddModal = true)}>
-					<IconPlus class="mr-2 h-5 w-5" /> Add Unit
+					<IconPlus class="mr-2 size-5" /> Add Unit
 				</button>
 			</div>
 		</div>
 
+		<!-- TODO: round management -->
+
 		<div class="flex flex-col gap-3">
 			{#if sortedUnits.length === 0}
-				<div class="card bg-base-200 p-12 text-center text-base-content/50">
+				<div class="card items-center bg-base-200 p-12 text-center text-base-content/50">
 					<p>No units in this encounter yet.</p>
-					<button class="btn mx-auto mt-4 btn-outline btn-sm" onclick={() => (showAddModal = true)}>
-						Add your first unit
+					<button class="btn mt-4 w-fit btn-primary" onclick={() => (showAddModal = true)}>
+						<IconPlus class="mr-2 size-5" /> Add Unit
 					</button>
 				</div>
 			{:else}
@@ -136,6 +129,7 @@
 				<EditEncounterModal
 					mode="edit"
 					initialName={encounter.name}
+					initialDescription={encounter.description}
 					initialGroup={encounter.group}
 					onConfirm={handleEditConfirm}
 					onClose={() => (showEditModal = false)}
@@ -146,6 +140,7 @@
 				<EditEncounterModal
 					mode="duplicate"
 					initialName={encounter.name}
+					initialDescription={encounter.description}
 					initialGroup={encounter.group}
 					onConfirm={handleDuplicateConfirm}
 					onClose={() => (showDuplicateModal = false)}
