@@ -105,7 +105,7 @@
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
 				type="number"
-				class="input input-xs text-center text-xl outline-none {noSpinClass}"
+				class="input input-xs text-center text-xl text-primary outline-none {noSpinClass}"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
 				onkeydown={handleKeyDown}
@@ -122,7 +122,7 @@
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
 				type="number"
-				class="input input-xs text-center text-xs outline-none {noSpinClass}"
+				class="input input-xs text-center text-xs text-primary outline-none {noSpinClass}"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
 				onkeydown={handleKeyDown}
@@ -165,7 +165,7 @@
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
 				type="text"
-				class="input input-xs text-left text-xl outline-none"
+				class="input input-xs text-left text-xl text-primary outline-none"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
 				onkeydown={handleKeyDown}
@@ -190,7 +190,7 @@
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
 				type="number"
-				class="input input-xs text-center text-base outline-none {noSpinClass} {noSpinClass}"
+				class="input input-xs text-center text-base text-primary outline-none {noSpinClass} {noSpinClass}"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
 				onkeydown={handleKeyDown}
@@ -245,7 +245,7 @@
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						type="number"
-						class="input input-xs w-10 text-center text-base outline-none {noSpinClass}"
+						class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
 						bind:value={tempValue}
 						onblur={() => stopEditing(true)}
 						onkeydown={handleKeyDown}
@@ -264,7 +264,7 @@
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						type="number"
-						class="input input-xs w-10 text-center text-base outline-none {noSpinClass}"
+						class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
 						bind:value={tempValue}
 						onblur={() => stopEditing(true)}
 						onkeydown={handleKeyDown}
@@ -285,7 +285,7 @@
 							<!-- svelte-ignore a11y_autofocus -->
 							<input
 								type="number"
-								class="input input-xs w-10 text-center text-base outline-none {noSpinClass}"
+								class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
 								bind:value={tempValue}
 								onblur={() => stopEditing(true)}
 								onkeydown={handleKeyDown}

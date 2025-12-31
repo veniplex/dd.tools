@@ -36,8 +36,7 @@
 
 	async function handleUpdateUnit(updatedUnit: Unit) {
 		if (encounter) {
-			const units = encounter.units.map((u) => (u.id === updatedUnit.id ? updatedUnit : u));
-			await encounterStore.updateEncounter({ ...encounter, units });
+			await encounterStore.updateUnit(encounter.id, updatedUnit);
 		}
 	}
 
@@ -55,9 +54,8 @@
 
 	async function handleEditUnitConfirm(unitData: Omit<Unit, "id">) {
 		if (encounter && unitToEdit) {
-			const updatedUnit = { ...unitData, id: unitToEdit.id };
-			const units = encounter.units.map((u) => (u.id === unitToEdit?.id ? updatedUnit : u));
-			await encounterStore.updateEncounter({ ...encounter, units });
+			const updatedUnit: Unit = { ...unitData, id: unitToEdit.id };
+			await encounterStore.updateUnit(encounter.id, updatedUnit);
 			unitToEdit = null;
 		}
 	}

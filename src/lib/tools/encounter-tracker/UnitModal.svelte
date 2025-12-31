@@ -81,7 +81,14 @@
 					<label class="label" for="unit-hp">
 						<span class="label-text">{mode === "add" ? "HP" : "Current HP"}</span>
 					</label>
-					<input id="unit-hp" type="number" bind:value={hp} class="input-bordered input" required />
+					<input
+						id="unit-hp"
+						type="number"
+						bind:value={hp}
+						class="input-bordered input"
+						min="0"
+						required
+					/>
 				</div>
 				{#if mode === "edit"}
 					<div class="form-control">
@@ -93,6 +100,7 @@
 							type="number"
 							bind:value={maxHp}
 							class="input-bordered input"
+							min="1"
 							required
 						/>
 					</div>
@@ -113,6 +121,7 @@
 							type="number"
 							bind:value={tempHp}
 							class="input-bordered input"
+							min="0"
 						/>
 					</div>
 				{:else}

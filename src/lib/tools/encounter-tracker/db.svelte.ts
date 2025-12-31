@@ -2,6 +2,14 @@ import Dexie, { type Table, liveQuery } from 'dexie';
 import { browser } from '$app/environment';
 import type { Encounter, Unit } from './types';
 
+export function validateUnit(unit: Unit): Unit {
+	const validated = { ...unit };
+	validated.maxHp = Math.max(1, Number(validated.maxHp) || 1);
+	validated.hp = Math.max(0, Math.min(Number(validated.hp) || 0, validated.maxHp));
+	validated.tempHp = Math.max(0, Number(validated.tempHp) || 0);
+	return validated;
+}
+
 export interface Group {
 	id: string;
 	name: string;
@@ -166,15 +174,26 @@ class EncounterStore {
 		const encounter = await this.getEncounter(encounterId);
 		if (!encounter) return;
 
-		const newUnit: Unit = {
+		const newUnit: Unit = validateUnit({
 			...unit,
-			id: crypto.randomUUID().split("-")[0],
-			tempHp: 0
-		};
+			id: crypto.randomUUID().split("-")[0]
+		});
 
 		encounter.units.push(newUnit);
 		await this.updateEncounter(encounter);
 		return newUnit;
+	}
+
+	async updateUnit(encounterId: string, updatedUnit: Unit) {
+		if (!browser) return;
+		
+		const encounter = await this.getEncounter(encounterId);
+		if (!encounter) return;
+
+		const validatedUnit = validateUnit(updatedUnit);
+		const units = encounter.units.map(u => u.id === validatedUnit.id ? validatedUnit : u);
+		
+		await this.updateEncounter({ ...encounter, units });
 	}
 
 	// Group Methods
