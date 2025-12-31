@@ -2,7 +2,7 @@
 	import IconDice from "~icons/mdi/dice-d20";
 </script>
 
-<nav class="navbar container mx-auto bg-transparent px-4 py-2">
+<nav class="navbar container mx-auto bg-transparent px-4 pt-6 pb-2">
 	<div class="navbar-center flex w-full justify-center">
 		<a href="/" class="group flex items-center gap-2 no-underline">
 			<IconDice class="size-12 text-primary transition-transform group-hover:scale-110" />

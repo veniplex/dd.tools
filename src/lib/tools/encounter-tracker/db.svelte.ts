@@ -54,6 +54,8 @@ class EncounterStore {
 	#groups = $state<Group[]>([]);
 	#loading = $state(true);
 	#error = $state<string | null>(null);
+	#encountersLoaded = false;
+	#groupsLoaded = false;
 
 	constructor() {
 		if (browser) {
@@ -89,7 +91,8 @@ class EncounterStore {
 		encounterObservable.subscribe({
 			next: (all) => {
 				this.#encounters = all;
-				if (this.#groups.length > 0 || !browser) this.#loading = false;
+				this.#encountersLoaded = true;
+				this.checkLoading();
 				this.#error = null;
 			},
 			error: (err) => {
@@ -102,7 +105,8 @@ class EncounterStore {
 		groupObservable.subscribe({
 			next: (all) => {
 				this.#groups = all;
-				if (this.#encounters.length > 0 || !browser) this.#loading = false;
+				this.#groupsLoaded = true;
+				this.checkLoading();
 				this.#error = null;
 			},
 			error: (err) => {
@@ -111,6 +115,12 @@ class EncounterStore {
 				this.#loading = false;
 			}
 		});
+	}
+
+	private checkLoading() {
+		if (this.#encountersLoaded && this.#groupsLoaded) {
+			this.#loading = false;
+		}
 	}
 
 	async addEncounter(name: string, description?: string, group?: string) {
