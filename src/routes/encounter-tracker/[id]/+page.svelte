@@ -11,6 +11,7 @@
 	import IconEdit from "~icons/heroicons/pencil";
 	import IconDuplicate from "~icons/heroicons/document-duplicate";
 	import IconTrash from "~icons/heroicons/trash";
+	import IconMore from "~icons/lucide/more-vertical";
 	import { goto } from "$app/navigation";
 
 	let id = $derived(page.params.id);
@@ -126,39 +127,63 @@
 
 <div class="container mx-auto p-4">
 	{#if encounter}
-		<div class="mb-4 flex flex-wrap items-center justify-between gap-4">
-			<div class="flex items-center gap-4">
-				<a href="/encounter-tracker" class="btn btn-ghost">
+		<div class="mb-6 flex items-center justify-between gap-4">
+			<div class="flex flex-1 items-center gap-2 sm:gap-4">
+				<a href="/encounter-tracker" class="btn shrink-0 px-2 btn-ghost" title="Back to Encounters">
 					<IconArrowLeft class="size-6" />
 				</a>
-				<div>
-					<h1 class="font-serif text-3xl font-bold">{encounter.name}</h1>
-					<p>{encounter.description}</p>
-					<p class="text-base-content/60">
-						{encounter.group ? `${encounter.group} •` : ""}
-						{encounter.units.length} Units
-					</p>
+
+				<div class="flex min-w-0 items-center gap-1 sm:gap-2">
+					<div class="min-w-0">
+						<h1 class="truncate font-serif text-2xl font-bold sm:text-3xl">
+							{encounter.name}
+						</h1>
+						<p class="truncate text-xs text-base-content/60 sm:text-sm">
+							{encounter.group ? `${encounter.group} • ` : ""}{encounter.units.length} Units
+						</p>
+					</div>
+
+					<div class="dropdown dropdown-start dropdown-bottom shrink-0">
+						<button tabindex="0" class="btn btn-ghost btn-sm" aria-label="Encounter Actions">
+							<IconMore class="size-4" />
+						</button>
+						<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+						<ul
+							tabindex="0"
+							class="dropdown-content menu w-48 rounded-box border border-base-300 bg-base-200 p-2 shadow-xl"
+						>
+							<li>
+								<button onclick={() => (showEditModal = true)}>
+									<IconEdit class="size-4" /> Edit Encounter
+								</button>
+							</li>
+							<li>
+								<button onclick={() => (showDuplicateModal = true)}>
+									<IconDuplicate class="size-4" /> Duplicate
+								</button>
+							</li>
+							<div class="divider my-0"></div>
+							<li>
+								<button onclick={() => (showDeleteEncounterModal = true)} class="text-error">
+									<IconTrash class="size-4" /> Delete
+								</button>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
-			<div class="flex flex-wrap gap-2">
-				<button onclick={() => (showEditModal = true)} class="btn btn-ghost">
-					<IconEdit class="size-5" />
-				</button>
-				<button onclick={() => (showDuplicateModal = true)} class="btn btn-ghost">
-					<IconDuplicate class="size-5" />
-				</button>
-				<button onclick={() => (showDeleteEncounterModal = true)} class="btn text-error btn-ghost">
-					<IconTrash class="size-5" />
-				</button>
-				<button class="btn btn-primary" onclick={() => (showAddModal = true)}>
-					<IconPlus class="mr-2 size-5" /> Add Unit
+
+			<div class="shrink-0">
+				<button class="btn btn-sm btn-primary sm:btn-md" onclick={() => (showAddModal = true)}>
+					<IconPlus class="h-4 w-4 sm:mr-2 sm:h-5 sm:w-5" />
+					<span class="hidden sm:inline">Add Unit</span>
 				</button>
 			</div>
 		</div>
 
 		<!-- TODO: Add round management here -->
 
-		<div class="flex flex-col gap-3">
+		<div class="flex flex-col gap-2">
 			{#if sortedUnits.length === 0}
 				<div class="card items-center bg-base-200 p-12 text-center text-base-content/50">
 					<p>No units in this encounter yet.</p>
@@ -169,12 +194,14 @@
 			{:else}
 				<!-- Table Header -->
 				<div
-					class="grid grid-cols-[0.5fr_3fr_0.5fr_5fr_0.25fr] gap-4 px-4 text-xs font-bold tracking-wider text-base-content/40 uppercase"
+					class="grid grid-cols-[1fr_2fr_1fr_4fr_1fr_1fr] gap-4 px-4 text-xs font-bold tracking-wider uppercase md:grid-cols-[1fr_4fr_1fr_6fr_1fr_1fr] lg:grid-cols-[1fr_4fr_1fr_8fr_1fr_1fr]"
 				>
-					<div class="text-center">Init</div>
+					<div class="text-center">Ini</div>
 					<div class="text-start">Unit</div>
 					<div class="text-center">AC</div>
-					<div class="text-center">HP & Status</div>
+					<div class="text-center">HP</div>
+					<div class="text-center">Tmp</div>
+					<div class="text-center"></div>
 				</div>
 
 				{#each sortedUnits as unit (unit.id)}
