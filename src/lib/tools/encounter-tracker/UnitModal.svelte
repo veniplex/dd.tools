@@ -2,6 +2,7 @@
 	import type { UnitAffiliation, Unit } from "./types";
 	import IconDice from "~icons/game-icons/dice-twenty-faces-twenty";
 	import { onMount } from "svelte";
+	import { evaluateMath } from "./db.svelte";
 
 	interface Props {
 		mode: "add" | "edit";
@@ -11,15 +12,23 @@
 	}
 
 	let { mode, unit, onConfirm, onClose }: Props = $props();
-
+	// svelte-ignore state_referenced_locally
 	let name = $state(unit?.name ?? "");
+	// svelte-ignore state_referenced_locally
 	let hp = $state(unit?.hp ?? 10);
+	// svelte-ignore state_referenced_locally
 	let maxHp = $state(unit?.maxHp ?? 10);
+	// svelte-ignore state_referenced_locally
 	let ac = $state(unit?.ac ?? 10);
+	// svelte-ignore state_referenced_locally
 	let initiativeBonus = $state(unit?.initiativeBonus ?? 0);
+	// svelte-ignore state_referenced_locally
 	let initiative = $state(unit?.initiative ?? 0);
+	// svelte-ignore state_referenced_locally
 	let affiliation = $state<UnitAffiliation>(unit?.affiliation ?? "enemy");
+	// svelte-ignore state_referenced_locally
 	let tempHp = $state(unit?.tempHp ?? 0);
+	// svelte-ignore state_referenced_locally
 	let dialog = $state<HTMLDialogElement | undefined>(undefined);
 
 	onMount(() => {
@@ -30,13 +39,13 @@
 		e.preventDefault();
 		onConfirm({
 			name,
-			hp,
-			maxHp: mode === "add" ? hp : maxHp,
-			ac,
-			initiativeBonus,
-			initiative,
+			hp: evaluateMath(hp),
+			maxHp: mode === "add" ? evaluateMath(hp) : evaluateMath(maxHp),
+			ac: evaluateMath(ac),
+			initiativeBonus: evaluateMath(initiativeBonus),
+			initiative: evaluateMath(initiative),
 			affiliation,
-			tempHp
+			tempHp: evaluateMath(tempHp)
 		});
 		onClose();
 	}
@@ -83,7 +92,7 @@
 					</label>
 					<input
 						id="unit-hp"
-						type="number"
+						type="text"
 						bind:value={hp}
 						class="input-bordered input"
 						min="0"
@@ -97,7 +106,7 @@
 						</label>
 						<input
 							id="unit-max-hp"
-							type="number"
+							type="text"
 							bind:value={maxHp}
 							class="input-bordered input"
 							min="1"
@@ -118,7 +127,7 @@
 						</label>
 						<input
 							id="unit-temp-hp"
-							type="number"
+							type="text"
 							bind:value={tempHp}
 							class="input-bordered input"
 							min="0"
@@ -136,7 +145,7 @@
 					</label>
 					<input
 						id="unit-init-bonus"
-						type="number"
+						type="text"
 						bind:value={initiativeBonus}
 						class="input-bordered input"
 					/>
@@ -148,7 +157,7 @@
 					<div class="join w-full">
 						<input
 							id="unit-init"
-							type="number"
+							type="text"
 							bind:value={initiative}
 							class="input-bordered input join-item w-full"
 						/>

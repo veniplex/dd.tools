@@ -104,7 +104,7 @@
 		{#if editingField === "initiative"}
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
-				type="number"
+				type="text"
 				class="input input-xs text-center text-xl text-primary outline-none {noSpinClass}"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
@@ -121,7 +121,7 @@
 		{#if editingField === "initiativeBonus"}
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
-				type="number"
+				type="text"
 				class="input input-xs text-center text-xs text-primary outline-none {noSpinClass}"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
@@ -185,11 +185,10 @@
 	<div
 		class="group flex items-center justify-center gap-1 rounded px-2 py-1 text-sm font-bold shadow-inner"
 	>
-		<IconShield class="size-5 min-h-5 min-w-5 group-hover:text-primary" />
 		{#if editingField === "ac"}
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
-				type="number"
+				type="text"
 				class="input input-xs text-center text-base text-primary outline-none {noSpinClass} {noSpinClass}"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
@@ -197,12 +196,12 @@
 				autofocus
 			/>
 		{:else}
-			<button
-				class="text-base group-hover:text-primary"
-				onclick={() => startEditing("ac", unit.ac)}
-			>
-				{unit.ac}
-			</button>
+			<div class="flex items-center gap-1 group-hover:cursor-text group-hover:text-primary">
+				<IconShield class="size-5 min-h-5 min-w-5 " onclick={() => startEditing("ac", unit.ac)} />
+				<button class="text-base" onclick={() => startEditing("ac", unit.ac)}>
+					{unit.ac}
+				</button>
+			</div>
 		{/if}
 	</div>
 
@@ -244,7 +243,7 @@
 				{#if editingField === "hp"}
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
-						type="number"
+						type="text"
 						class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
 						bind:value={tempValue}
 						onblur={() => stopEditing(true)}
@@ -263,7 +262,7 @@
 				{#if editingField === "maxHp"}
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
-						type="number"
+						type="text"
 						class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
 						bind:value={tempValue}
 						onblur={() => stopEditing(true)}
@@ -284,7 +283,7 @@
 						({#if editingField === "tempHp"}
 							<!-- svelte-ignore a11y_autofocus -->
 							<input
-								type="number"
+								type="text"
 								class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
 								bind:value={tempValue}
 								onblur={() => stopEditing(true)}

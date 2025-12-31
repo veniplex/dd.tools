@@ -2,11 +2,29 @@ import Dexie, { type Table, liveQuery } from 'dexie';
 import { browser } from '$app/environment';
 import type { Encounter, Unit } from './types';
 
+export function evaluateMath(input: string | number): number {
+	if (typeof input === 'number') return input;
+	// Remove all characters except digits, operators (+, -, *, /), and dots
+	const sanitized = input.replace(/[^0-9+\-*/.]/g, '');
+	try {
+		// Use a safe way to evaluate. Since we sanitized, we can use Function or a custom parser.
+		// For simplicity and safety (since we only allowed math chars), we'll use a simple parser
+		// but for now, Function is "safe enough" after the strict regex cleanup.
+		// However, let's do a slightly cleaner regex evaluation for basic operations if possible.
+		return Number(new Function(`return ${sanitized || '0'}`)());
+	} catch {
+		return parseInt(sanitized) || 0;
+	}
+}
+
 export function validateUnit(unit: Unit): Unit {
 	const validated = { ...unit };
-	validated.maxHp = Math.max(1, Number(validated.maxHp) || 1);
-	validated.hp = Math.max(0, Math.min(Number(validated.hp) || 0, validated.maxHp));
-	validated.tempHp = Math.max(0, Number(validated.tempHp) || 0);
+	validated.maxHp = Math.max(1, evaluateMath(validated.maxHp));
+	validated.hp = Math.max(0, Math.min(evaluateMath(validated.hp), validated.maxHp));
+	validated.tempHp = Math.max(0, evaluateMath(validated.tempHp));
+	validated.ac = evaluateMath(validated.ac);
+	validated.initiative = evaluateMath(validated.initiative);
+	validated.initiativeBonus = evaluateMath(validated.initiativeBonus);
 	return validated;
 }
 
