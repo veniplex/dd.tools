@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Unit, UnitAffiliation } from "./types";
-	import IconShield from "~icons/game-icons/shield";
+	import IconShield from "~icons/mingcute/shield-shape-fill";
 	import IconPlus from "~icons/lucide/plus";
 	import IconMinus from "~icons/lucide/minus";
 	import IconEdit from "~icons/lucide/pencil";
@@ -38,6 +38,34 @@
 		return "bg-error";
 	});
 
+	let editingField = $state<string | null>(null);
+	let tempValue = $state<any>(null);
+
+	const noSpinClass =
+		"[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+
+	function startEditing(field: string, value: any) {
+		editingField = field;
+		tempValue = value;
+	}
+
+	function stopEditing(save = true) {
+		if (save && editingField) {
+			(unit as any)[editingField] = tempValue;
+			onUpdate(unit);
+		}
+		editingField = null;
+		tempValue = null;
+	}
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (e.key === "Enter") {
+			stopEditing(true);
+		} else if (e.key === "Escape") {
+			stopEditing(false);
+		}
+	}
+
 	function adjustHp(amount: number) {
 		if (amount < 0) {
 			// Damage logic: subtract from THP first
@@ -73,26 +101,109 @@
 >
 	<!-- 1 Initiative -->
 	<div class="flex flex-col items-center">
-		<div class="text-xl leading-none font-bold">{unit.initiative}</div>
-		<div class="text-sm">
-			{unit.initiativeBonus >= 0 ? "+" : "-"}{unit.initiativeBonus}
-		</div>
+		{#if editingField === "initiative"}
+			<!-- svelte-ignore a11y_autofocus -->
+			<input
+				type="number"
+				class="input input-xs text-center text-xl outline-none {noSpinClass}"
+				bind:value={tempValue}
+				onblur={() => stopEditing(true)}
+				onkeydown={handleKeyDown}
+				autofocus
+			/>
+		{:else}
+			<button
+				class="text-xl leading-none font-bold hover:cursor-text hover:text-primary"
+				onclick={() => startEditing("initiative", unit.initiative)}
+				>{unit.initiative + unit.initiativeBonus}</button
+			>
+		{/if}
+		{#if editingField === "initiativeBonus"}
+			<!-- svelte-ignore a11y_autofocus -->
+			<input
+				type="number"
+				class="input input-xs text-center text-xs outline-none {noSpinClass}"
+				bind:value={tempValue}
+				onblur={() => stopEditing(true)}
+				onkeydown={handleKeyDown}
+				autofocus
+			/>
+		{:else}
+			<button
+				class="text-xs hover:cursor-text hover:text-primary"
+				onclick={() => startEditing("initiativeBonus", unit.initiativeBonus)}
+			>
+				{unit.initiativeBonus >= 0 ? "+" : ""}{unit.initiativeBonus}
+			</button>
+		{/if}
 	</div>
 
 	<!-- 2 Name -->
 	<div class="flex min-w-20 flex-col items-start gap-1 truncate">
-		<div class="badge {affiliationColors[unit.affiliation]} shrink-0 badge-xs">
-			{unit.affiliation.toUpperCase()}
-		</div>
-		<h3 class="truncate font-serif text-xl leading-tight font-bold">{unit.name}</h3>
+		{#if editingField === "affiliation"}
+			<select
+				class="select w-full select-xs outline-none"
+				bind:value={tempValue}
+				onchange={() => stopEditing(true)}
+				onblur={() => stopEditing(true)}
+			>
+				<option value="player">PLAYER</option>
+				<option value="ally">ALLY</option>
+				<option value="neutral">NEUTRAL</option>
+				<option value="enemy">ENEMY</option>
+			</select>
+		{:else}
+			<button
+				class="badge {affiliationColors[unit.affiliation]} shrink-0 badge-xs hover:opacity-80"
+				onclick={() => startEditing("affiliation", unit.affiliation)}
+			>
+				{unit.affiliation.toUpperCase()}
+			</button>
+		{/if}
+
+		{#if editingField === "name"}
+			<!-- svelte-ignore a11y_autofocus -->
+			<input
+				type="text"
+				class="input input-xs text-left text-xl outline-none"
+				bind:value={tempValue}
+				onblur={() => stopEditing(true)}
+				onkeydown={handleKeyDown}
+				autofocus
+			/>
+		{:else}
+			<button
+				class="truncate font-serif text-xl leading-tight font-bold hover:cursor-text hover:text-primary"
+				onclick={() => startEditing("name", unit.name)}
+			>
+				{unit.name}
+			</button>
+		{/if}
 	</div>
 
 	<!-- 3 AC -->
 	<div
-		class="flex items-center justify-center gap-1 rounded px-2 py-1 text-sm font-bold shadow-inner"
+		class="group flex items-center justify-center gap-1 rounded px-2 py-1 text-sm font-bold shadow-inner"
 	>
-		<IconShield class="size-4" />
-		{unit.ac}
+		<IconShield class="size-5 min-h-5 min-w-5 group-hover:text-primary" />
+		{#if editingField === "ac"}
+			<!-- svelte-ignore a11y_autofocus -->
+			<input
+				type="number"
+				class="input input-xs text-center text-base outline-none {noSpinClass} {noSpinClass}"
+				bind:value={tempValue}
+				onblur={() => stopEditing(true)}
+				onkeydown={handleKeyDown}
+				autofocus
+			/>
+		{:else}
+			<button
+				class="text-base group-hover:text-primary"
+				onclick={() => startEditing("ac", unit.ac)}
+			>
+				{unit.ac}
+			</button>
+		{/if}
 	</div>
 
 	<!-- 4 HP Management -->
@@ -130,13 +241,68 @@
 					? 'text-success-content'
 					: 'text-primary'}"
 			>
-				{unit.hp} / {unit.maxHp}
-				{#if unit.tempHp > 0}
-					<span
-						class="ml-1 font-normal {(unit.hp / unit.maxHp) * 100 > 50
-							? 'text-blue-700'
-							: 'text-blue-300'}"
-						>(+{unit.tempHp})
+				{#if editingField === "hp"}
+					<!-- svelte-ignore a11y_autofocus -->
+					<input
+						type="number"
+						class="input input-xs w-10 text-center text-base outline-none {noSpinClass}"
+						bind:value={tempValue}
+						onblur={() => stopEditing(true)}
+						onkeydown={handleKeyDown}
+						autofocus
+					/>
+				{:else}
+					<button
+						class="text-base hover:cursor-text hover:text-primary"
+						onclick={() => startEditing("hp", unit.hp)}
+					>
+						{unit.hp}
+					</button>
+				{/if}
+				<span class="mx-1">/</span>
+				{#if editingField === "maxHp"}
+					<!-- svelte-ignore a11y_autofocus -->
+					<input
+						type="number"
+						class="input input-xs w-10 text-center text-base outline-none {noSpinClass}"
+						bind:value={tempValue}
+						onblur={() => stopEditing(true)}
+						onkeydown={handleKeyDown}
+						autofocus
+					/>
+				{:else}
+					<button
+						class="text-base hover:cursor-text hover:text-primary"
+						onclick={() => startEditing("maxHp", unit.maxHp)}
+					>
+						{unit.maxHp}
+					</button>
+				{/if}
+
+				{#if unit.tempHp > 0 || editingField === "tempHp"}
+					<span class="ml-1 flex items-center font-normal">
+						({#if editingField === "tempHp"}
+							<!-- svelte-ignore a11y_autofocus -->
+							<input
+								type="number"
+								class="input input-xs w-10 text-center text-base outline-none {noSpinClass}"
+								bind:value={tempValue}
+								onblur={() => stopEditing(true)}
+								onkeydown={handleKeyDown}
+								autofocus
+							/>
+						{:else}
+							<button
+								class="text-base hover:cursor-text hover:text-primary {(unit.hp / unit.maxHp) *
+									100 >
+								50
+									? 'text-blue-700'
+									: 'text-blue-300'}"
+								onclick={() => startEditing("tempHp", unit.tempHp)}
+							>
+								+{unit.tempHp}
+							</button>
+						{/if})
 					</span>
 				{/if}
 			</div>
