@@ -126,7 +126,7 @@
 <div class="container mx-auto p-4">
 	{#if encounter}
 		<div class="mb-6 flex items-center justify-between gap-4">
-			<div class="flex flex-1 items-center gap-2 sm:gap-4">
+			<div class="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
 				<a href="/encounter-tracker" class="btn shrink-0 px-2 btn-ghost" title="Back to Encounters">
 					<IconArrowLeft class="size-6" />
 				</a>
