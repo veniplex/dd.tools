@@ -1,10 +1,13 @@
 <script lang="ts">
 	import EncounterCard from "./EncounterCard.svelte";
 	import { encounterStore, type Group } from "./db.svelte";
+	import type { Encounter } from "./types";
 	import EditGroupModal from "./EditGroupModal.svelte";
 	import ConfirmationModal from "./ConfirmationModal.svelte";
 	import IconEdit from "~icons/heroicons/pencil-square";
 	import IconTrash from "~icons/heroicons/trash";
+
+	let { encounters = $bindable() }: { encounters: Encounter[] } = $props();
 
 	// Data is now primarily sourced from encounterStore directly for global state
 	// but we still accept encounters as a prop if needed for filtering
