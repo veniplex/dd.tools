@@ -11,6 +11,7 @@
 	let { group, onConfirm, onClose }: Props = $props();
 	let name = $state(group.name);
 	let dialog = $state<HTMLDialogElement>();
+	let isBackdropMouseDown = false;
 
 	onMount(() => {
 		dialog?.showModal();
@@ -35,7 +36,8 @@
 	bind:this={dialog}
 	class="modal"
 	onclose={handleClose}
-	onclick={(e) => e.target === dialog && handleClose()}
+	onmousedown={(e) => (isBackdropMouseDown = e.target === dialog)}
+	onclick={(e) => isBackdropMouseDown && e.target === dialog && handleClose()}
 >
 	<div class="modal-box max-w-sm">
 		<h3 class="font-serif text-2xl font-bold">Edit Group</h3>

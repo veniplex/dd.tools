@@ -30,6 +30,7 @@
 	let tempHp = $state(unit?.tempHp ?? 0);
 	// svelte-ignore state_referenced_locally
 	let dialog = $state<HTMLDialogElement | undefined>(undefined);
+	let isBackdropMouseDown = false;
 
 	onMount(() => {
 		dialog?.showModal();
@@ -65,7 +66,8 @@
 	bind:this={dialog}
 	class="modal"
 	onclose={handleClose}
-	onclick={(e) => e.target === dialog && handleClose()}
+	onmousedown={(e) => (isBackdropMouseDown = e.target === dialog)}
+	onclick={(e) => isBackdropMouseDown && e.target === dialog && handleClose()}
 >
 	<div class="modal-box max-w-md border border-base-300 shadow-2xl">
 		<h3 class="font-serif text-2xl font-bold">{mode === "add" ? "Add New Unit" : "Edit Unit"}</h3>

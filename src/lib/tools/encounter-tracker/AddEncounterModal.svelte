@@ -12,6 +12,7 @@
 	let description = $state("");
 	let groupId = $state("");
 	let dialog = $state<HTMLDialogElement>();
+	let isBackdropMouseDown = false;
 
 	onMount(() => {
 		dialog?.showModal();
@@ -37,7 +38,8 @@
 	bind:this={dialog}
 	class="modal"
 	onclose={handleClose}
-	onclick={(e) => e.target === dialog && handleClose()}
+	onmousedown={(e) => (isBackdropMouseDown = e.target === dialog)}
+	onclick={(e) => isBackdropMouseDown && e.target === dialog && handleClose()}
 >
 	<div class="modal-box max-w-sm">
 		<h3 class="font-serif text-2xl font-bold">New Encounter</h3>
