@@ -64,8 +64,36 @@
 	async function handleDuplicateUnit(unit: Unit) {
 		if (encounter) {
 			const { id: _, ...unitData } = unit;
-			// Duplicate slightly modified name or just same? Usually safe to append (Copy) or just add another.
-			await encounterStore.addUnit(encounter.id, { ...unitData, name: `${unitData.name} (Copy)` });
+
+			// Extract base name and current number
+			// Matches "Name #123" -> ["Name #123", "Name", "123"]
+			// Matches "Name" -> ["Name", "Name", undefined]
+			const nameMatch = unit.name.match(/^(.*?)(?:\s+#(\d+))?$/);
+			const baseName = nameMatch ? nameMatch[1].trim() : unit.name.trim();
+
+			// Find all existing numbers for this base name
+			const existingNumbers = new Set<number>();
+			encounter.units.forEach((u) => {
+				const m = u.name.match(/^(.*?)(?:\s+#(\d+))?$/);
+				if (m) {
+					const uBase = m[1].trim();
+					if (uBase === baseName) {
+						const uNum = m[2] ? parseInt(m[2]) : 1;
+						existingNumbers.add(uNum);
+					}
+				}
+			});
+
+			// Find the smallest available number n > 1
+			// Note: If "Goblin" (no suffix) exists, it's considered #1.
+			// The user wants the first duplicate to be #2.
+			let nextNum = 2;
+			while (existingNumbers.has(nextNum)) {
+				nextNum++;
+			}
+
+			const newName = `${baseName} #${nextNum}`;
+			await encounterStore.addUnit(encounter.id, { ...unitData, name: newName });
 		}
 	}
 
@@ -105,6 +133,7 @@
 				</a>
 				<div>
 					<h1 class="font-serif text-3xl font-bold">{encounter.name}</h1>
+					<p>{encounter.description}</p>
 					<p class="text-base-content/60">
 						{encounter.group ? `${encounter.group} •` : ""}
 						{encounter.units.length} Units
