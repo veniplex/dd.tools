@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { encounterStore } from "./db.svelte";
-	import { onMount, tick } from "svelte";
+	import { onMount, tick, untrack } from "svelte";
 
 	interface Props {
 		encounterId?: string;
@@ -22,15 +22,9 @@
 		onClose
 	}: Props = $props();
 
-	// We capture the initial values once to avoid the Svelte 5 reactivity warning
-	// when using props directly in $state()
-	const initialNameValue = mode === "duplicate" ? `${initialName} (Copy)` : initialName;
-	const initialDescValue = initialDescription || "";
-	const initialGroupValue = initialGroup || "";
-
-	let name = $state(initialNameValue);
-	let description = $state(initialDescValue);
-	let groupName = $state(initialGroupValue);
+	let name = $state(untrack(() => (mode === "duplicate" ? `${initialName} (Copy)` : initialName)));
+	let description = $state(untrack(() => initialDescription || ""));
+	let groupName = $state(untrack(() => initialGroup || ""));
 	let dialog = $state<HTMLDialogElement>();
 	let isBackdropMouseDown = false;
 

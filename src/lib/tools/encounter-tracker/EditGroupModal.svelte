@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, untrack } from "svelte";
 	import type { Group } from "./db.svelte";
 
 	interface Props {
@@ -9,7 +9,7 @@
 	}
 
 	let { group, onConfirm, onClose }: Props = $props();
-	let name = $state(group.name);
+	let name = $state(untrack(() => group.name));
 	let dialog = $state<HTMLDialogElement>();
 	let isBackdropMouseDown = false;
 
