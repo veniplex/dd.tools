@@ -31,7 +31,7 @@
 		</div>
 		<div>
 			<p>
-				Copyright © {new Date().getFullYear()} - All right reserved by dd.tools. Version
+				Copyright © {new Date().getFullYear()} - All right reserved by dd.tools. CC BY-NC 4.0. Version
 				<a href="https://github.com/veniplex/dd.tools/releases"
 					>{import.meta.env.VITE_APP_VERSION}</a
 				>.

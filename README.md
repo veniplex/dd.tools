@@ -3,7 +3,7 @@
 [![Svelte](https://img.shields.io/badge/Svelte-5.0-ff3e00?logo=svelte)](https://svelte.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38bdf8?logo=tailwind-css)](https://tailwindcss.com)
 [![DaisyUI](https://img.shields.io/badge/daisyUI-5.0-5551ff?logo=daisyui)](https://daisyui.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC_BY--NC_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 A modern, offline-first, and privacy-focused suite of tools for Dungeons & Dragons (5th Edition), built for Dungeon Masters and Players who value speed, reliability, and data ownership.
 
@@ -24,12 +24,14 @@ A robust combat management tool designed to streamline initiative and HP trackin
 - **Encounter Groups**: Organize your prep with custom groups and drag-and-drop organization.
 - **Persistence**: Auto-saves every change instantly via Dexie.js.
 
+### More tools to come...
+
 ## 🚀 Tech Stack
 
-- **Framework**: [Svelte 5](https://svelte.dev) (Runes: `$state`, `$derived`, `$props`)
+- **Framework**: [Svelte 5](https://svelte.dev)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com) & [daisyUI](https://daisyui.com)
-- **Database**: [Dexie.js](https://dexie.org) (IndexedDB wrapper)
-- **Iconography**: [Iconify](https://iconify.design) via `unplugin-icons`
+- **Database**: [Dexie.js](https://dexie.org)
+- **Iconography**: [Iconify](https://iconify.design)
 - **Build Tool**: [Vite](https://vitejs.dev)
 
 ## 🏁 Getting Started
@@ -71,4 +73,4 @@ dd.tools is unofficial Fan Content permitted under the Fan Content Policy. Not a
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International ($$CC BY-NC 4.0$$)** License - see the [LICENSE](LICENSE) file for details.
