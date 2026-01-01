@@ -41,6 +41,12 @@
 	onclose={handleClose}
 	onmousedown={(e) => (isBackdropMouseDown = e.target === dialog)}
 	onclick={(e) => isBackdropMouseDown && e.target === dialog && handleClose()}
+	onkeydown={(e) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			onConfirm();
+		}
+	}}
 >
 	<div class="modal-box max-w-sm">
 		<h3 class="font-serif text-2xl font-bold">{title}</h3>

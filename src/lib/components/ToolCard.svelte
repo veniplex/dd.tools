@@ -14,7 +14,7 @@
 	const statusConfig = $derived({
 		released: { style: "badge badge-ghost", text: version ? `v${version}` : "" },
 		beta: { style: "badge badge-info", text: "BETA" },
-		planned: { style: "badge badge-accent badge-soft", text: "PLANNED" }
+		planned: { style: "badge badge-accent", text: "PLANNED" }
 	});
 </script>
 
@@ -23,13 +23,13 @@
 	href={`/${slug}`}
 	class="card transform overflow-hidden border border-primary/25 {status !== 'planned'
 		? 'hover:scale-105 hover:border-primary'
-		: 'cursor-default opacity-80'} bg-base-100 shadow-xl transition-transform duration-300"
+		: 'cursor-default opacity-70'} bg-base-100 shadow-xl transition-transform duration-300"
 >
 	<div class="card-body items-center text-center">
 		<div
-			class="mb-2 text-5xl {status !== 'planned'
-				? 'text-primary'
-				: 'text-primary/50'} transition-transform duration-300"
+			class="mb-2 text-5xl text-primary {status !== 'planned'
+				? ''
+				: 'opacity-70'} transition-transform duration-300"
 		>
 			<Icon />
 		</div>

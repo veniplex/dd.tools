@@ -99,7 +99,7 @@
 </script>
 
 <div
-	class="card grid grid-cols-[1fr_2fr_1fr_4fr_1fr_1fr] items-center gap-4 border px-4 py-2 shadow-sm transition-all hover:cursor-grab md:grid-cols-[1fr_4fr_1fr_6fr_1fr_1fr] lg:grid-cols-[1fr_4fr_1fr_8fr_1fr_1fr] {isActive
+	class="card grid grid-cols-[1fr_2fr_1fr_4fr_1fr_1fr] items-center gap-4 border px-4 py-2 shadow-sm transition-all md:grid-cols-[1fr_4fr_1fr_6fr_1fr_1fr] lg:grid-cols-[1fr_4fr_1fr_8fr_1fr_1fr] {isActive
 		? 'z-10 scale-[1.01] border-primary bg-base-300 ring-2 ring-primary/20'
 		: 'border-base-200 bg-base-100 hover:border-primary hover:bg-base-100/50'}"
 >
@@ -338,7 +338,7 @@
 
 	<!-- 6 Actions -->
 	<div class="flex items-center justify-end">
-		<div class="dropdown dropdown-end">
+		<div class="dropdown dropdown-end lg:hidden">
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<div tabindex="0" role="button" class="btn btn-ghost btn-sm" aria-label="Unit Actions">
 				<IconMore class="size-4" />
@@ -365,6 +365,18 @@
 					</button>
 				</li>
 			</ul>
+		</div>
+
+		<div class="hidden gap-4 lg:flex">
+			<button onclick={() => onEdit(unit)}>
+				<IconEdit class="size-5  hover:cursor-pointer" />
+			</button>
+			<button onclick={() => onDuplicate(unit)}>
+				<IconCopy class="size-5 hover:cursor-pointer" />
+			</button>
+			<button onclick={() => onDelete(unit.id)} class="text-error">
+				<IconTrash class="size-5 hover:cursor-pointer" />
+			</button>
 		</div>
 	</div>
 </div>

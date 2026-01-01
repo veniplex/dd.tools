@@ -184,7 +184,19 @@
 				}
 			}, 1000);
 
-			return () => clearInterval(interval);
+			return () => {
+				if (timerInterval !== null) {
+					clearInterval(timerInterval);
+					timerInterval = null;
+				}
+				// Auto-pause encounter when navigating away
+				if (isActive) {
+					encounterStore.updateEncounter({
+						...encounter,
+						status: "paused"
+					});
+				}
+			};
 		}
 	});
 </script>

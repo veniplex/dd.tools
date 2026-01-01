@@ -12,12 +12,6 @@
 	let showDuplicateModal = $state(false);
 	let showDeleteModal = $state(false);
 
-	const statusColors: Record<string, string> = {
-		active: "badge-success",
-		paused: "badge-warning",
-		stopped: "badge-error"
-	};
-
 	async function handleEditConfirm(name: string, description?: string, group?: string) {
 		await encounterStore.updateEncounter({ ...encounter, name, description, group });
 	}

@@ -187,7 +187,9 @@
 			</div>
 		</div>
 
-		<RoundManager {encounter} />
+		{#if encounter.units.length > 0}
+			<RoundManager {encounter} />
+		{/if}
 
 		<!-- Unit List -->
 		<div class="flex flex-col gap-2">

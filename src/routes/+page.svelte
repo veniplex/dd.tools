@@ -3,6 +3,8 @@
 	import Hero from "$lib/components/Hero.svelte";
 	import { tools } from "$lib/tools/config";
 	import type { ToolStatus } from "$lib/tools/types";
+	import IconFeedback from "~icons/mdi/feedback";
+	import IconGithub from "~icons/mdi/github";
 
 	const statusPriority: Record<ToolStatus, number> = {
 		released: 0,
@@ -30,16 +32,18 @@
 		{/each}
 
 		<!-- Bonus Card for Custom Tools -->
-		<div
-			class="group card flex items-center justify-center border-2 border-dashed border-base-content/20 bg-base-200/50 p-8 text-center opacity-70 transition-opacity hover:opacity-100"
-		>
-			<div class="card-body py-12">
-				<p class="font-serif text-lg font-bold">Have a Tool Idea?</p>
-				<p class="text-xs opacity-70">Join the development and shape the future of D&D Tools.</p>
-				<div class="mt-4 card-actions justify-center">
-					<button
-						class="btn border-base-content/20 text-[10px] tracking-widest uppercase btn-ghost btn-sm"
-						>Contribute</button
+		<div class="card transform overflow-hidden border-2 border-dashed border-base-content/50">
+			<div class="card-body items-center text-center">
+				<div class="mb-2 text-5xl text-primary opacity-75 transition-transform duration-300">
+					<IconFeedback />
+				</div>
+				<h2 class="card-title font-serif text-2xl tracking-wide opacity-75">Have a Tool Idea?</h2>
+				<p class="text-sm text-primary opacity-75">
+					Join the development and shape the future of D&D Tools.
+				</p>
+				<div class="card-actions justify-center opacity-90">
+					<a href="https://github.com/veniplex/dd.tools" target="_blank"
+						><button class="btn"><IconGithub />Contribute on GitHub</button></a
 					>
 				</div>
 			</div>

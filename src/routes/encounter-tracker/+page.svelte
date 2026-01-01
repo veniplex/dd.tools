@@ -23,10 +23,10 @@
 
 	<div class="mb-12 flex flex-wrap justify-center gap-4">
 		<button class="btn btn-primary" onclick={() => (showEncounterModal = true)}>
-			<IconPlus class="mr-2 h-5 w-5" /> New Encounter
+			<IconPlus class="size-5" /> New Encounter
 		</button>
-		<button class="btn btn-secondary" onclick={() => (showGroupModal = true)}>
-			<IconFolderPlus class="mr-2 h-5 w-5" /> New Group
+		<button class="btn btn-outline btn-primary" onclick={() => (showGroupModal = true)}>
+			<IconFolderPlus class="size-5" /> New Group
 		</button>
 	</div>
 

@@ -87,6 +87,15 @@
 	ondragstart={handleGlobalDragStart}
 	ondragend={handleGlobalDragEnd}
 >
+	<!-- Empty Encounter Store -->
+	{#if encounterStore.encounters.length === 0}
+		<div class="flex h-64 items-center justify-center">
+			<h3 class="text-lg font-medium text-base-content/50 italic">
+				The dungeon is silent. No encounters await your command.
+			</h3>
+		</div>
+	{/if}
+
 	<!-- Ungrouped Encounters (Conditional at the top) -->
 	{#if ungrouped.length > 0 || isDragging}
 		<div class="flex flex-col gap-1">

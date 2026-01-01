@@ -130,7 +130,7 @@ class EncounterStore {
 			id: crypto.randomUUID().split("-")[0],
 			name,
 			description,
-			status: 'paused',
+			status: 'stopped',
 			group,
 			units: [],
 			round: 0,
