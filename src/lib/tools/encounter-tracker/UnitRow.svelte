@@ -7,16 +7,18 @@
 	import IconCopy from "~icons/lucide/copy";
 	import IconTrash from "~icons/lucide/trash-2";
 	import IconMore from "~icons/lucide/more-vertical";
+	import IconDice from "~icons/mdi/dice-d20";
 
 	interface Props {
 		unit: Unit;
+		isActive?: boolean;
 		onUpdate: (unit: Unit) => void;
 		onDelete: (id: string) => void;
 		onEdit: (unit: Unit) => void;
 		onDuplicate: (unit: Unit) => void;
 	}
 
-	let { unit, onUpdate, onDelete, onEdit, onDuplicate }: Props = $props();
+	let { unit, isActive = false, onUpdate, onDelete, onEdit, onDuplicate }: Props = $props();
 
 	const affiliationColors: Record<UnitAffiliation, string> = {
 		player: "badge-info",
@@ -97,7 +99,9 @@
 </script>
 
 <div
-	class="card grid grid-cols-[1fr_2fr_1fr_4fr_1fr_1fr] items-center gap-4 border border-base-200 bg-base-100 px-4 py-2 shadow-sm transition-colors hover:cursor-grab hover:border-primary hover:bg-base-100/50 md:grid-cols-[1fr_4fr_1fr_6fr_1fr_1fr] lg:grid-cols-[1fr_4fr_1fr_8fr_1fr_1fr]"
+	class="card grid grid-cols-[1fr_2fr_1fr_4fr_1fr_1fr] items-center gap-4 border px-4 py-2 shadow-sm transition-all hover:cursor-grab md:grid-cols-[1fr_4fr_1fr_6fr_1fr_1fr] lg:grid-cols-[1fr_4fr_1fr_8fr_1fr_1fr] {isActive
+		? 'z-10 scale-[1.01] border-primary bg-base-300 ring-2 ring-primary/20'
+		: 'border-base-200 bg-base-100 hover:border-primary hover:bg-base-100/50'}"
 >
 	<!-- 1 Initiative -->
 	<div class="flex flex-col items-center">
@@ -115,8 +119,13 @@
 			<button
 				class="text-xl leading-none font-bold hover:cursor-text hover:text-primary"
 				onclick={() => startEditing("initiative", unit.initiative)}
-				>{unit.initiative + unit.initiativeBonus}</button
 			>
+				{#if unit.initiative === 0}
+					<IconDice class="size-5 text-base-content/40" />
+				{:else}
+					{unit.initiative + unit.initiativeBonus}
+				{/if}
+			</button>
 		{/if}
 		{#if editingField === "initiativeBonus"}
 			<!-- svelte-ignore a11y_autofocus -->
@@ -165,7 +174,7 @@
 			<!-- svelte-ignore a11y_autofocus -->
 			<input
 				type="text"
-				class="input input-xs text-left text-xl text-primary outline-none"
+				class="input input-xs text-left font-serif text-xl text-primary outline-none"
 				bind:value={tempValue}
 				onblur={() => stopEditing(true)}
 				onkeydown={handleKeyDown}
@@ -244,7 +253,7 @@
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						type="text"
-						class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
+						class="input input-xs w-16 text-center text-base text-primary outline-none {noSpinClass}"
 						bind:value={tempValue}
 						onblur={() => stopEditing(true)}
 						onkeydown={handleKeyDown}
@@ -263,7 +272,7 @@
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						type="text"
-						class="input input-xs w-10 text-center text-base text-primary outline-none {noSpinClass}"
+						class="input input-xs w-16 text-center text-base text-primary outline-none {noSpinClass}"
 						bind:value={tempValue}
 						onblur={() => stopEditing(true)}
 						onkeydown={handleKeyDown}

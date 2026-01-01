@@ -22,9 +22,15 @@
 		onClose
 	}: Props = $props();
 
-	let name = $state(mode === "duplicate" ? `${initialName} (Copy)` : initialName);
-	let description = $state(initialDescription || "");
-	let groupName = $state(initialGroup || "");
+	// We capture the initial values once to avoid the Svelte 5 reactivity warning
+	// when using props directly in $state()
+	const initialNameValue = mode === "duplicate" ? `${initialName} (Copy)` : initialName;
+	const initialDescValue = initialDescription || "";
+	const initialGroupValue = initialGroup || "";
+
+	let name = $state(initialNameValue);
+	let description = $state(initialDescValue);
+	let groupName = $state(initialGroupValue);
 	let dialog = $state<HTMLDialogElement>();
 	let isBackdropMouseDown = false;
 

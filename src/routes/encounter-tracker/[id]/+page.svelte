@@ -12,6 +12,7 @@
 	import IconDuplicate from "~icons/heroicons/document-duplicate";
 	import IconTrash from "~icons/heroicons/trash";
 	import IconMore from "~icons/lucide/more-vertical";
+	import RoundManager from "$lib/tools/encounter-tracker/RoundManager.svelte";
 	import { goto } from "$app/navigation";
 
 	let id = $derived(page.params.id);
@@ -25,7 +26,13 @@
 	let unitToEdit = $state<Unit | null>(null);
 
 	let sortedUnits = $derived(
-		encounter?.units?.slice().sort((a, b) => b.initiative - a.initiative) || []
+		[...(encounter?.units || [])].sort((a, b) => {
+			const totalA = a.initiative + a.initiativeBonus;
+			const totalB = b.initiative + b.initiativeBonus;
+			if (totalB !== totalA) return totalB - totalA;
+			if (b.initiativeBonus !== a.initiativeBonus) return b.initiativeBonus - a.initiativeBonus;
+			return a.name.localeCompare(b.name);
+		})
 	);
 
 	async function handleAddUnit(unitData: Omit<Unit, "id">) {
@@ -125,6 +132,7 @@
 
 <div class="container mx-auto p-4">
 	{#if encounter}
+		<!-- Encounter Header -->
 		<div class="mb-6 flex items-center justify-between gap-4">
 			<div class="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
 				<a href="/encounter-tracker" class="btn shrink-0 px-2 btn-ghost" title="Back to Encounters">
@@ -173,14 +181,15 @@
 
 			<div class="shrink-0">
 				<button class="btn btn-sm btn-primary sm:btn-md" onclick={() => (showAddModal = true)}>
-					<IconPlus class="h-4 w-4 sm:mr-2 sm:h-5 sm:w-5" />
+					<IconPlus class="size-5 sm:mr-2" />
 					<span class="hidden sm:inline">Add Unit</span>
 				</button>
 			</div>
 		</div>
 
-		<!-- TODO: Add round management here -->
+		<RoundManager {encounter} />
 
+		<!-- Unit List -->
 		<div class="flex flex-col gap-2">
 			{#if sortedUnits.length === 0}
 				<div class="card items-center bg-base-200 p-12 text-center text-base-content/50">
@@ -205,6 +214,7 @@
 				{#each sortedUnits as unit (unit.id)}
 					<UnitRow
 						{unit}
+						isActive={encounter.currentTurn === unit.id}
 						onUpdate={handleUpdateUnit}
 						onDelete={() => (unitToDelete = unit.id)}
 						onEdit={handleEditUnit}

@@ -133,7 +133,8 @@ class EncounterStore {
 			status: 'paused',
 			group,
 			units: [],
-			round: 0
+			round: 0,
+			timerSeconds: 0
 		};
 		
 		try {
@@ -184,6 +185,7 @@ class EncounterStore {
 			group: newGroup === undefined ? original.group : newGroup,
 			status: 'paused',
 			round: 1,
+			timerSeconds: 0,
 			units: original.units.map((u) => ({ ...u, id: crypto.randomUUID().split("-")[0], tempHp: u.tempHp ?? 0 }))
 		};
 

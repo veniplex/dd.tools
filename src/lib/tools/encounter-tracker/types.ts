@@ -22,4 +22,5 @@ export interface Encounter {
 	units: Unit[];
 	round: number;
 	currentTurn?: string; // unit id
+	timerSeconds?: number;
 }
