@@ -180,8 +180,8 @@
 			</div>
 
 			<div class="shrink-0">
-				<button class="btn btn-sm btn-primary sm:btn-md" onclick={() => (showAddModal = true)}>
-					<IconPlus class="size-5 sm:mr-2" />
+				<button class="btn btn-primary" onclick={() => (showAddModal = true)}>
+					<IconPlus class="size-5" />
 					<span class="hidden sm:inline">Add Unit</span>
 				</button>
 			</div>

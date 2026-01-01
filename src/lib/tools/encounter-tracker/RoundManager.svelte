@@ -2,12 +2,13 @@
 	import { encounterStore } from "./db.svelte";
 	import type { Encounter, Unit } from "./types";
 	import IconPlay from "~icons/heroicons/play-solid";
-	import IconPause from "~icons/heroicons/pause";
-	import IconStop from "~icons/heroicons/stop";
+	import IconPause from "~icons/heroicons/pause-solid";
+	import IconStop from "~icons/heroicons/stop-solid";
 	import IconChevronRight from "~icons/heroicons/chevron-right";
 	import IconChevronLeft from "~icons/heroicons/chevron-left";
 	import IconReset from "~icons/system-uicons/reset";
 	import IconDice from "~icons/mdi/dice-d20";
+	import IconResetAll from "~icons/mingcute/back-2-fill";
 
 	let { encounter } = $props<{ encounter: Encounter }>();
 
@@ -36,13 +37,27 @@
 	}
 
 	async function rollNpcs() {
-		const updatedUnits = encounter.units.map((unit: Unit) => {
-			if (unit.affiliation !== "player") {
-				const roll = Math.floor(Math.random() * 20) + 1;
-				return { ...unit, initiative: roll };
-			}
-			return unit;
-		});
+		let updatedUnits: Unit[];
+
+		if (!allInitiativesSet) {
+			// Roll for ALL units that don't have initiative yet
+			updatedUnits = encounter.units.map((unit: Unit) => {
+				if (unit.initiative === 0) {
+					const roll = Math.floor(Math.random() * 20) + 1;
+					return { ...unit, initiative: roll };
+				}
+				return unit;
+			});
+		} else {
+			// All initiatives are set, so re-roll ONLY for non-player units
+			updatedUnits = encounter.units.map((unit: Unit) => {
+				if (unit.affiliation !== "player") {
+					const roll = Math.floor(Math.random() * 20) + 1;
+					return { ...unit, initiative: roll };
+				}
+				return unit;
+			});
+		}
 
 		await encounterStore.updateEncounter({
 			...encounter,
@@ -82,7 +97,8 @@
 			...encounter,
 			status: "stopped",
 			round: 0,
-			currentTurn: undefined
+			currentTurn: undefined,
+			timerSeconds: 0
 		});
 	}
 
@@ -128,7 +144,7 @@
 		});
 	}
 
-	async function resetUnits(type: "npc" | "player" | "all") {
+	async function resetUnits(type: "npc" | "player" | "all", onlyInitiative = false) {
 		const updatedUnits = encounter.units.map((unit: Unit) => {
 			const isMatch =
 				type === "all" ||
@@ -136,6 +152,9 @@
 				(type === "player" && unit.affiliation === "player");
 
 			if (isMatch) {
+				if (onlyInitiative) {
+					return { ...unit, initiative: 0 };
+				}
 				return { ...unit, initiative: 0, hp: unit.maxHp, tempHp: 0 };
 			}
 			return unit;
@@ -178,71 +197,111 @@
 						<span class="text-xs font-bold tracking-wider text-base-content/60 uppercase"
 							>Round</span
 						>
-						<span class="font-serif text-3xl font-bold text-primary">{encounter.round}</span>
+						<span class="font-mono text-2xl font-bold text-primary">{encounter.round}</span>
 					</div>
 					{#if encounter.timerSeconds !== undefined && encounter.status !== "stopped"}
 						<div class="flex flex-col border-l border-base-content/10 pl-6">
 							<span class="text-xs font-bold tracking-wider text-base-content/60 uppercase"
 								>Time</span
 							>
-							<span class="font-mono text-3xl font-bold">{formatTime(encounter.timerSeconds)}</span>
+							<span class="font-mono text-2xl font-bold text-primary"
+								>{formatTime(encounter.timerSeconds)}</span
+							>
 						</div>
 					{/if}
 				{/if}
 			</div>
 
 			<!-- Main Controls -->
-			<div class="flex items-center gap-2">
+			<div class="flex h-14 items-center gap-2">
 				{#if encounter.status === "stopped"}
 					<div class="flex items-center gap-2">
 						<button
-							class="btn btn-primary {allInitiativesSet ? 'btn-outline' : ''}"
+							class="btn opacity-75 btn-primary hover:opacity-100 {allInitiativesSet
+								? 'btn-outline'
+								: ''}"
 							onclick={rollNpcs}
 						>
 							<IconDice class="size-5" />
-							{allInitiativesSet ? "" : "Roll initiative"}
+							{allInitiativesSet ? "Re-roll NPC Initiative" : "Roll Initiative"}
 						</button>
 						<button
-							class="btn btn-primary {allInitiativesSet ? '' : 'hidden'}"
+							class="btn btn-success {allInitiativesSet ? '' : 'hidden'}"
 							onclick={startEncounter}
 							disabled={!allInitiativesSet}
 							title="Start Encounter"
 						>
 							<IconPlay class="size-5" />
-							Start
+							Start Encounter
 						</button>
-						<div class="dropdown dropdown-end">
-							<button tabindex="0" class="btn btn-outline">
+						<div class="dropdown dropdown-end text-error">
+							<button tabindex="0" class="btn btn-outline btn-error" title="Reset Options">
 								<IconReset class="size-5 stroke-2" />
 							</button>
 							<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 							<ul
 								tabindex="0"
-								class="dropdown-content menu z-30 w-52 rounded-box border border-base-100 bg-base-300 p-2 shadow-xl"
+								class="dropdown-content menu z-30 w-64 rounded-box border border-base-100 bg-base-300 p-2 shadow-xl"
 							>
-								<li><button onclick={() => resetUnits("npc")}>Reset NPCs</button></li>
-								<li><button onclick={() => resetUnits("player")}>Reset Players</button></li>
-								<li><button onclick={() => resetUnits("all")}>Reset All</button></li>
+								<li class="menu-title text-error/50">Reset NPCs</li>
+								<li>
+									<button onclick={() => resetUnits("npc", true)}
+										><IconDice class="size-5" /> Initiative Only</button
+									>
+								</li>
+								<li>
+									<button onclick={() => resetUnits("npc", false)}
+										><IconResetAll class="size-5" /> All Values</button
+									>
+								</li>
+
+								<div class="divider my-0"></div>
+								<li class="menu-title text-error/50">Reset Players</li>
+								<li>
+									<button onclick={() => resetUnits("player", true)}
+										><IconDice class="size-5" /> Initiative Only</button
+									>
+								</li>
+								<li>
+									<button onclick={() => resetUnits("player", false)}
+										><IconResetAll class="size-5" /> All Values</button
+									>
+								</li>
+
+								<div class="divider my-0"></div>
+								<li class="menu-title text-error/50">Reset All</li>
+								<li>
+									<button onclick={() => resetUnits("all", true)}
+										><IconDice class="size-5" /> Initiative Only</button
+									>
+								</li>
+								<li>
+									<button onclick={() => resetUnits("all", false)}
+										><IconResetAll class="size-5" /> All Values</button
+									>
+								</li>
 							</ul>
 						</div>
 					</div>
 				{:else if encounter.status === "active"}
 					<div class="flex items-center gap-2">
-						<div class="btn-group join">
-							<button class="btn join-item btn-ghost" onclick={previousTurn} title="Previous Turn">
-								<IconChevronLeft class="size-5" />
-							</button>
-							<button class="btn join-item btn-ghost" onclick={nextTurn} title="Next Turn">
-								<IconChevronRight class="size-5" />
-							</button>
-						</div>
-
-						<button class="btn btn-warning" onclick={pauseEncounter}>
-							<IconPause class="size-5" /> Pause
+						<button
+							class="btn join-item btn-ghost btn-primary"
+							onclick={previousTurn}
+							title="Previous Turn"
+						>
+							<IconChevronLeft class="size-5" />
+						</button>
+						<button class="btn join-item btn-primary" onclick={nextTurn} title="Next Turn">
+							<IconChevronRight class="size-5" />
 						</button>
 
-						<button class="btn btn-outline btn-error" onclick={stopEncounter}>
-							<IconStop class="size-5" /> Stop
+						<button class="btn btn-warning" onclick={pauseEncounter}>
+							<IconPause class="size-5" />
+						</button>
+
+						<button class="btn btn-error" onclick={stopEncounter}>
+							<IconStop class="size-5" />
 						</button>
 					</div>
 				{:else if encounter.status === "paused"}
@@ -256,12 +315,12 @@
 							</button>
 						</div>
 
-						<button class="btn btn-primary" onclick={resumeEncounter}>
-							<IconPlay class="size-5" /> Resume
+						<button class="btn btn-success" onclick={resumeEncounter}>
+							<IconPlay class="size-5" />
 						</button>
 
-						<button class="btn btn-outline btn-error" onclick={stopEncounter}>
-							<IconStop class="size-5" /> Stop
+						<button class="btn btn-error" onclick={stopEncounter}>
+							<IconStop class="size-5" />
 						</button>
 					</div>
 				{/if}
