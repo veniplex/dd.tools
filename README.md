@@ -34,39 +34,6 @@ A robust combat management tool designed to streamline initiative and HP trackin
 - **Iconography**: [Iconify](https://iconify.design)
 - **Build Tool**: [Vite](https://vitejs.dev)
 
-## 🏁 Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [npm](https://www.npmjs.com/)
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/veniplex/dd.tools.git
-   cd dd.tools
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-
-   ```bash
-   npm run dev
-   ```
-
-4. Build for production:
-   ```bash
-   npm run build
-   ```
-
 ## ⚖️ Legal Disclaimer
 
 dd.tools is unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. Wizards of the Coast, Dungeons & Dragons, and their logos are trademarks of Wizards of the Coast LLC. &copy; Wizards of the Coast LLC.
