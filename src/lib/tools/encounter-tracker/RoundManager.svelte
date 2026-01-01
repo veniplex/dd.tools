@@ -9,6 +9,7 @@
 	import IconReset from "~icons/system-uicons/reset";
 	import IconDice from "~icons/mdi/dice-d20";
 	import IconResetAll from "~icons/mingcute/back-2-fill";
+	import { untrack } from "svelte";
 
 	let { encounter } = $props<{ encounter: Encounter }>();
 
@@ -27,6 +28,9 @@
 	let allInitiativesSet = $derived(
 		encounter.units.length > 0 && encounter.units.every((u: Unit) => u.initiative > 0)
 	);
+
+	const isActive = $derived(encounter.status === "active");
+	const encounterId = $derived(encounter.id);
 
 	function formatTime(seconds: number): string {
 		const h = Math.floor(seconds / 3600);
@@ -66,8 +70,8 @@
 	}
 
 	async function startEncounter() {
-		// Find first unit in initiative order based on current units
-		const firstUnit = [...encounter.units].sort((a, b) => b.initiative - a.initiative)[0];
+		// Find first unit in initiative order based on robust sorting
+		const firstUnit = sortedUnits[0];
 
 		await encounterStore.updateEncounter({
 			...encounter,
@@ -167,23 +171,21 @@
 	}
 
 	$effect(() => {
-		if (encounter.status === "active") {
-			timerInterval = window.setInterval(async () => {
-				await encounterStore.updateEncounter({
-					...encounter,
-					timerSeconds: (encounter.timerSeconds ?? 0) + 1
-				});
-			}, 1000);
-		} else {
-			if (timerInterval) {
-				clearInterval(timerInterval);
-				timerInterval = null;
-			}
-		}
+		if (isActive) {
+			const interval = window.setInterval(async () => {
+				// Access the latest encounter state without creating a dependency
+				const latest = untrack(() => encounterStore.encounters.find((e) => e.id === encounterId));
 
-		return () => {
-			if (timerInterval) clearInterval(timerInterval);
-		};
+				if (latest && latest.status === "active") {
+					await encounterStore.updateEncounter({
+						...latest,
+						timerSeconds: (latest.timerSeconds ?? 0) + 1
+					});
+				}
+			}, 1000);
+
+			return () => clearInterval(interval);
+		}
 	});
 </script>
 
@@ -217,8 +219,8 @@
 				{#if encounter.status === "stopped"}
 					<div class="flex items-center gap-2">
 						<button
-							class="btn opacity-75 btn-primary hover:opacity-100 {allInitiativesSet
-								? 'btn-outline'
+							class="btn btn-primary hover:opacity-100 {allInitiativesSet
+								? 'opacity-75 btn-outline'
 								: ''}"
 							onclick={rollNpcs}
 						>
